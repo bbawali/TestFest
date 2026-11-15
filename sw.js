@@ -3,7 +3,7 @@
      the cached copy is used only when the network is unavailable.
    - Versioned libraries (KaTeX, Firebase SDK modules): stale-while-revalidate.
    - Firestore / Auth / every other request is NOT touched, so live exam data is never cached. */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const SHELL_CACHE = 'testfest-shell-' + VERSION;
 const CDN_CACHE = 'testfest-cdn-' + VERSION;
 const SHELL_FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon.png'];
