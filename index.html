@@ -2,8 +2,36 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Classroom Examination Portal</title>
+<meta name="description" content="Timed online tests with instant marking and worked solutions.">
+<meta name="theme-color" content="#0B1020">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="TestFest">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>
+/* PWA: capture the install prompt as early as possible (it can fire before the module script runs)
+   and register the service worker. */
+window.__deferredInstall = null;
+window.addEventListener('beforeinstallprompt', function (e) {
+  e.preventDefault();
+  window.__deferredInstall = e;
+  window.dispatchEvent(new Event('pwa-state'));
+});
+window.addEventListener('appinstalled', function () {
+  window.__deferredInstall = null;
+  window.dispatchEvent(new Event('pwa-state'));
+});
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js', { scope: './' }).catch(function (err) { console.warn('Service worker registration failed', err); });
+  });
+}
+</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <style>
 :root{
@@ -198,6 +226,11 @@ input[type=email][aria-invalid=true]{border-color:var(--err)}
 .savestate{font-size:.8rem;color:var(--muted)} .savestate.off{color:#FCD34D}
 code{background:#0F1729;border:1px solid var(--line);border-radius:6px;padding:.05rem .4rem;font-size:.88em}
 @media (prefers-reduced-motion:reduce){.spinner{animation-duration:4s}}
+
+/* PWA install button */
+.pwa-install{position:fixed;right:max(1rem,env(safe-area-inset-right));bottom:max(1rem,env(safe-area-inset-bottom));z-index:60;display:inline-flex;align-items:center;gap:.5rem;border-radius:999px;padding:.7rem 1.15rem;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.pwa-steps{margin:.4rem 0 0;padding-left:1.2rem}
+.pwa-steps li{margin:.45rem 0}
 </style>
 </head>
 <body>
@@ -866,6 +899,7 @@ function render() {
   root.innerHTML = html;
   if (showing !== 'exam') stopTimer(); else startTimer();
   renderMath(root);
+  updateInstallUi();
   if (ui.scrollTop) { window.scrollTo(0, 0); ui.scrollTop = false; } else window.scrollTo(0, y);
   const modal = $('.modal', root);
   if (modal) { const b = $('button', modal); if (b) b.focus(); }
@@ -1808,6 +1842,64 @@ function init() {
   else window.addEventListener('load', () => renderMath($('#app')));
 }
 init();
+
+/* =====================================================================
+   11. PWA INSTALL BUTTON
+   The button lives outside #app so re-renders never remove it. It appears only when
+   the app is not already installed/running as an app, and never during an exam.
+   - Chrome / Edge / Samsung Internet / Opera (Android + desktop): native install prompt.
+   - iPhone / iPad (Safari has no install prompt): the button opens "Add to Home Screen" steps.
+   ===================================================================== */
+function pwaIsStandalone() {
+  try {
+    return window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: window-controls-overlay)').matches || window.matchMedia('(display-mode: minimal-ui)').matches || window.navigator.standalone === true;
+  } catch (e) { return false; }
+}
+function pwaIsIos() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function updateInstallUi() {
+  let btn = document.getElementById('pwaInstall');
+  const canShow = !pwaIsStandalone() && ui.screen !== 'exam' && (!!window.__deferredInstall || pwaIsIos());
+  if (!canShow) { if (btn) btn.remove(); return; }
+  if (btn) return;
+  btn = document.createElement('button');
+  btn.id = 'pwaInstall'; btn.type = 'button'; btn.className = 'btn btn-primary pwa-install';
+  btn.setAttribute('aria-label', 'Install this app on your device');
+  btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg><span>Install App</span>';
+  btn.addEventListener('click', installApp);
+  document.body.appendChild(btn);
+}
+async function installApp() {
+  const ev = window.__deferredInstall;
+  if (ev) {
+    window.__deferredInstall = null;          // the saved prompt can be used only once
+    try { ev.prompt(); await ev.userChoice; } catch (e) { console.warn('Install prompt failed', e); }
+    updateInstallUi();
+    return;
+  }
+  showInstallGuide();
+}
+function showInstallGuide() {
+  if (document.getElementById('pwaGuide')) return;
+  const wrap = document.createElement('div');
+  wrap.id = 'pwaGuide'; wrap.className = 'backdrop';
+  wrap.innerHTML = '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="pwaGuideTitle"><h2 id="pwaGuideTitle">Install on iPhone / iPad</h2>' +
+    '<ol class="pwa-steps"><li>Open this page in <strong>Safari</strong>.</li>' +
+    '<li>Tap the <strong>Share</strong> button (the square with an arrow pointing up).</li>' +
+    '<li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>' +
+    '<li>Tap <strong>Add</strong>. The app icon will appear on your home screen.</li></ol>' +
+    '<div class="btn-row"><button type="button" class="btn btn-primary" data-pwa-close>Got it</button></div></div>';
+  const close = () => { wrap.remove(); document.removeEventListener('keydown', onKey); };
+  const onKey = e => { if (e.key === 'Escape') close(); };
+  wrap.addEventListener('click', e => { if (e.target === wrap || e.target.hasAttribute('data-pwa-close')) close(); });
+  document.addEventListener('keydown', onKey);
+  document.body.appendChild(wrap);
+  const b = wrap.querySelector('button'); if (b) b.focus();
+}
+window.addEventListener('pwa-state', updateInstallUi);
+try { window.matchMedia('(display-mode: standalone)').addEventListener('change', updateInstallUi); } catch (e) { /* older browsers */ }
+updateInstallUi();
 
 </script>
 </body>
