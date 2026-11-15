@@ -1,0 +1,28 @@
+{
+  "id": "./",
+  "name": "Classroom Examination Portal",
+  "short_name": "TestFest",
+  "description": "Timed online tests with instant marking and worked solutions.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0B1020",
+  "theme_color": "#0B1020",
+  "lang": "en",
+  "categories": ["education"],
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
