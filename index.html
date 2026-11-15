@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classroom Examination Portal</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+:root{
+  --bg:#0B1020; --side:#111827; --card:#1B2538; --card2:#223049; --line:#2C3B57;
+  --primary:#6366F1; --primary-h:#7679F5; --secondary:#06B6D4; --ok:#10B981; --warn:#F59E0B; --err:#EF4444;
+  --text:#F8FAFC; --muted:#94A3B8; --purple:#8B5CF6; --radius:14px;
+}
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body{margin:0;background:var(--bg);background-image:radial-gradient(1200px 600px at 80% -10%,rgba(99,102,241,.14),transparent),radial-gradient(900px 500px at -10% 110%,rgba(6,182,212,.10),transparent);background-attachment:fixed;color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;min-height:100vh;overflow-wrap:break-word}
+h1,h2,h3{line-height:1.25;margin:0 0 .6rem}
+h1{font-size:1.7rem} h2{font-size:1.2rem} h3{font-size:1.02rem}
+p{margin:.4rem 0}
+.muted{color:var(--muted)} .tiny{font-size:.82rem;color:var(--muted)}
+a{color:var(--secondary)}
+:focus-visible{outline:3px solid var(--secondary);outline-offset:2px;border-radius:6px}
+
+/* buttons */
+.btn{appearance:none;border:1px solid transparent;border-radius:10px;padding:.62rem 1.1rem;font:inherit;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s,transform .05s,opacity .15s;color:var(--text);background:var(--card2)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--primary)} .btn-primary:hover:not(:disabled){background:var(--primary-h)}
+.btn-secondary{background:transparent;border-color:var(--line)} .btn-secondary:hover:not(:disabled){border-color:var(--secondary);color:var(--secondary)}
+.btn-danger{background:var(--err)} .btn-danger:hover:not(:disabled){background:#F25C5C}
+.btn-success{background:var(--ok);color:#04251A} .btn-success:hover:not(:disabled){background:#22C493}
+.btn-ghost{background:transparent;color:var(--muted);border-color:var(--line)} .btn-ghost:hover:not(:disabled){color:var(--text);border-color:var(--muted)}
+.btn-sm{padding:.38rem .75rem;font-size:.88rem}
+.btn-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.9rem}
+
+/* forms */
+.field{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.9rem}
+.field label,.lbl{font-weight:600;font-size:.92rem}
+input[type=text],input[type=password],input[type=tel],input[type=number],select,textarea{width:100%;background:#0F1729;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:.62rem .8rem;font:inherit}
+input::placeholder,textarea::placeholder{color:#64748B}
+textarea{resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88rem;line-height:1.45}
+select{appearance:auto}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 1rem}
+.err{color:#FCA5A5;font-size:.87rem}
+.hint{color:var(--muted);font-size:.88rem}
+input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--err)}
+
+/* cards & layout */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:1.2rem 1.3rem;margin-bottom:1.1rem}
+.card.flat{background:#17213A}
+.center-wrap{max-width:860px;margin:0 auto;padding:2.2rem 1rem 2rem}
+.narrow{max-width:460px}
+.hero{text-align:center;margin-bottom:1.6rem}
+.hero .logo{width:62px;height:62px;margin:0 auto .8rem;border-radius:18px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:grid;place-items:center}
+.sub{color:var(--muted);max-width:560px;margin:.3rem auto}
+.role-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin:1.4rem 0}
+.role-card{appearance:none;text-align:left;font:inherit;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:18px;padding:1.6rem;cursor:pointer;transition:border-color .15s,transform .12s,box-shadow .15s}
+.role-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.role-card h2{margin:.7rem 0 .3rem;font-size:1.3rem}
+.role-card p{color:var(--muted);margin:0}
+.role-ico{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:rgba(99,102,241,.18);color:#A5B4FC}
+.role-card.stu .role-ico{background:rgba(6,182,212,.16);color:#67E8F9}
+.notice{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);color:#FCD34D;border-radius:12px;padding:.8rem 1rem;font-size:.9rem}
+.notice.info{background:rgba(6,182,212,.08);border-color:rgba(6,182,212,.3);color:#A5F3FC}
+.flash{border-radius:12px;padding:.75rem 1rem;margin-bottom:1rem;border:1px solid;font-weight:500}
+.flash.success{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.5);color:#6EE7B7}
+.flash.error{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.5);color:#FCA5A5}
+.flash.warning{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.5);color:#FCD34D}
+.flash.info{background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.4);color:#A5F3FC}
+
+/* admin shell */
+.admin{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
+.sidebar{background:var(--side);border-right:1px solid var(--line);padding:1.2rem 1rem;position:sticky;top:0;height:100vh;overflow:auto;display:flex;flex-direction:column;gap:1rem}
+.brand{display:flex;align-items:center;gap:.7rem;font-weight:700}
+.brand .logo-sm{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:grid;place-items:center;flex:none}
+.sidebar nav{display:flex;flex-direction:column;gap:.25rem}
+.nav-btn{appearance:none;text-align:left;font:inherit;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:10px;padding:.6rem .8rem;cursor:pointer}
+.nav-btn:hover{background:rgba(255,255,255,.05);color:var(--text)}
+.nav-btn.active{background:rgba(99,102,241,.2);color:#fff;border-color:rgba(99,102,241,.5)}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:.6rem}
+.content{padding:1.6rem clamp(1rem,3vw,2.4rem) 3rem;min-width:0;max-width:1200px;width:100%}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem;margin-bottom:1.1rem}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem 1.2rem}
+.stat .n{font-size:2rem;font-weight:800;line-height:1.1}
+.stat .l{color:var(--muted);font-size:.9rem}
+.stat.a1{border-top:3px solid var(--primary)} .stat.a2{border-top:3px solid var(--secondary)} .stat.a3{border-top:3px solid var(--warn)} .stat.a4{border-top:3px solid var(--ok)}
+
+/* tables */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:.6rem .75rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+td.wrap{white-space:normal;min-width:160px}
+th{background:#17213A;color:var(--muted);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;position:sticky;top:0}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:.12rem .6rem;border-radius:999px;font-size:.78rem;font-weight:700;border:1px solid}
+.badge.pass,.badge.done{background:rgba(16,185,129,.15);color:#6EE7B7;border-color:rgba(16,185,129,.5)}
+.badge.fail{background:rgba(239,68,68,.15);color:#FCA5A5;border-color:rgba(239,68,68,.5)}
+.badge.prog{background:rgba(245,158,11,.15);color:#FCD34D;border-color:rgba(245,158,11,.5)}
+.badge.new{background:rgba(148,163,184,.12);color:#CBD5E1;border-color:rgba(148,163,184,.4)}
+.empty{text-align:center;padding:1.6rem 1rem;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
+
+/* question rendering */
+.rt{white-space:pre-wrap;overflow-wrap:anywhere;min-width:0}
+.rt .katex-display,.q-stem .katex-display{overflow-x:auto;overflow-y:hidden;max-width:100%;padding:.15em 0;margin:.6em 0}
+.qcard{border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem;margin-bottom:.9rem;background:#17213A}
+.qcard .qhead{display:flex;justify-content:space-between;gap:.6rem;align-items:center;margin-bottom:.5rem;flex-wrap:wrap}
+.chip{display:inline-block;padding:.12rem .65rem;border-radius:999px;font-size:.78rem;font-weight:700;background:rgba(99,102,241,.2);color:#C7D2FE;border:1px solid rgba(99,102,241,.45)}
+.chip-review{background:rgba(139,92,246,.2);color:#DDD6FE;border-color:rgba(139,92,246,.5)}
+.opts{display:grid;gap:.45rem;margin:.7rem 0}
+.o{display:flex;gap:.7rem;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:.55rem .75rem;background:#0F1729}
+.o .ltr{flex:none;width:1.7rem;height:1.7rem;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.82rem;background:var(--card2)}
+.o.correct{border-color:var(--ok);background:rgba(16,185,129,.10)} .o.correct .ltr{background:var(--ok);color:#04251A}
+.o.wrong{border-color:var(--err);background:rgba(239,68,68,.10)} .o.wrong .ltr{background:var(--err)}
+.o .tag{margin-left:auto;flex:none;font-size:.74rem;font-weight:700;padding:.05rem .5rem;border-radius:999px;border:1px solid;white-space:nowrap}
+.o .tag.t-ok{color:#6EE7B7;border-color:rgba(16,185,129,.6)} .o .tag.t-bad{color:#FCA5A5;border-color:rgba(239,68,68,.6)} .o .tag.t-you{color:#C7D2FE;border-color:rgba(99,102,241,.6)}
+.solution{margin-top:.6rem;padding:.75rem .9rem;border-left:3px solid var(--secondary);background:rgba(6,182,212,.07);border-radius:0 10px 10px 0}
+.solution .lbl{color:#67E8F9;display:block;margin-bottom:.2rem}
+.marks{font-weight:700}
+.marks.pos{color:#6EE7B7} .marks.neg{color:#FCA5A5} .marks.zero{color:var(--muted)}
+pre.errs,ul.errs{margin:.4rem 0 0;padding-left:1.2rem}
+ul.errs li{margin:.2rem 0;color:#FCA5A5}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7rem;margin:.4rem 0 0}
+.kv>div{background:#17213A;border:1px solid var(--line);border-radius:10px;padding:.55rem .8rem}
+.kv dt{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.kv dd{margin:.1rem 0 0;font-weight:700;font-size:1.05rem}
+.big-score{font-size:2.4rem;font-weight:800;line-height:1}
+.q-pick{display:flex;gap:.7rem;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:.75rem .9rem;margin-bottom:.6rem;background:#17213A;cursor:pointer}
+.q-pick:hover{border-color:var(--primary)}
+.q-pick input{margin-top:.35rem;width:1.1rem;height:1.1rem;flex:none}
+.q-pick .rt{flex:1}
+
+/* tests list (student) */
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
+.test-card{margin:0;display:flex;flex-direction:column;gap:.5rem}
+.test-card .btn-row{margin-top:auto;padding-top:.5rem}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap;padding:.9rem clamp(1rem,3vw,2.4rem);border-bottom:1px solid var(--line);background:var(--side)}
+.page{max-width:1100px;margin:0 auto;padding:1.4rem clamp(1rem,3vw,2rem) 3rem}
+
+/* exam */
+.exam-head{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap;padding:.7rem clamp(.8rem,3vw,2rem);background:rgba(17,24,39,.97);border-bottom:1px solid var(--line);backdrop-filter:blur(6px)}
+.eh-left{display:flex;flex-direction:column;min-width:0}
+.eh-right{display:flex;gap:.5rem;align-items:center}
+.timer{font-variant-numeric:tabular-nums;font-weight:800;font-size:1.45rem;padding:.2rem .9rem;border-radius:10px;background:#0F1729;border:1px solid var(--line);letter-spacing:.04em}
+.timer.low{color:var(--warn);border-color:var(--warn)} .timer.crit{color:#FCA5A5;border-color:var(--err)}
+.exam-grid{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:1.1rem;max-width:1200px;margin:0 auto;padding:1.1rem clamp(.8rem,3vw,2rem) 3rem;align-items:start}
+.q-stem{font-size:1.1rem;margin:.6rem 0 1rem}
+.options{display:grid;gap:.6rem}
+.opt{display:flex;gap:.8rem;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:.8rem .95rem;background:#0F1729;cursor:pointer;transition:border-color .12s,background .12s}
+.opt:hover{border-color:var(--primary)}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt .opt-letter{flex:none;width:2rem;height:2rem;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--card2);border:1px solid var(--line)}
+.opt.sel{border-color:var(--primary);background:rgba(99,102,241,.16)} .opt.sel .opt-letter{background:var(--primary);border-color:var(--primary)}
+.opt:has(input:focus-visible){outline:3px solid var(--secondary);outline-offset:2px}
+.q-actions,.q-nav{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
+.q-nav{justify-content:space-between;border-top:1px solid var(--line);padding-top:1rem}
+.palette{position:sticky;top:76px}
+.pal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:.45rem;margin:.6rem 0 .9rem}
+.pal{appearance:none;font:inherit;font-weight:700;height:44px;border-radius:10px;cursor:pointer;color:var(--text);position:relative;border:2px solid var(--line);background:#0F1729}
+.pal.s-notvisited{color:var(--muted);border-style:dashed}
+.pal.s-unanswered{border-color:var(--err);background:rgba(239,68,68,.16)}
+.pal.s-answered{background:var(--ok);border-color:var(--ok);color:#04251A}
+.pal.s-review{background:var(--purple);border-color:var(--purple);border-radius:50%}
+.pal.s-answered-review{background:var(--ok);border-color:var(--purple);color:#04251A;box-shadow:inset 0 0 0 2px var(--purple)}
+.pal.s-answered-review::after{content:"";position:absolute;top:-5px;right:-5px;width:13px;height:13px;border-radius:50%;background:var(--purple);border:2px solid var(--card)}
+.pal.current{outline:3px solid #fff;outline-offset:2px}
+.legend{display:grid;gap:.35rem;font-size:.82rem;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:.5rem}
+.sw{width:18px;height:18px;border-radius:5px;border:2px solid var(--line);flex:none;display:inline-block}
+.sw.s-notvisited{border-style:dashed} .sw.s-unanswered{border-color:var(--err);background:rgba(239,68,68,.25)} .sw.s-answered{background:var(--ok);border-color:var(--ok)}
+.sw.s-review{background:var(--purple);border-color:var(--purple);border-radius:50%} .sw.s-answered-review{background:var(--ok);border-color:var(--purple)}
+
+/* modal */
+.backdrop{position:fixed;inset:0;background:rgba(2,6,23,.78);display:grid;place-items:center;z-index:100;padding:16px;overflow:auto}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:16px;max-width:480px;width:100%;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal h2{margin-bottom:.8rem}
+
+@media (max-width:900px){
+  .admin{grid-template-columns:1fr}
+  .sidebar{position:static;height:auto;flex-direction:column;border-right:none;border-bottom:1px solid var(--line)}
+  .sidebar nav{flex-direction:row;overflow-x:auto;padding-bottom:.3rem}
+  .nav-btn{white-space:nowrap}
+  .side-foot{flex-direction:row;align-items:center;justify-content:space-between;margin-top:0}
+  .side-foot .tiny{display:none}
+  .exam-grid{grid-template-columns:1fr}
+  .palette{position:static}
+}
+@media (max-width:520px){
+  h1{font-size:1.4rem}
+  .timer{font-size:1.15rem}
+  .btn{padding:.6rem .9rem}
+  .q-nav .btn{flex:1}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+input[type=email]{width:100%;background:#0F1729;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:.62rem .8rem;font:inherit}
+input[type=email][aria-invalid=true]{border-color:var(--err)}
+.spinner{width:38px;height:38px;border:4px solid var(--line);border-top-color:var(--secondary);border-radius:50%;margin:0 auto 1rem;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.savestate{font-size:.8rem;color:var(--muted)} .savestate.off{color:#FCD34D}
+code{background:#0F1729;border:1px solid var(--line);border-radius:6px;padding:.05rem .4rem;font-size:.88em}
+@media (prefers-reduced-motion:reduce){.spinner{animation-duration:4s}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<!-- The AI extraction prompt (kept verbatim; read into a JavaScript string constant below). -->
+<script type="text/plain" id="ai-prompt-source">
+You are an expert {{SUBJECT}} Question Paper Analyst, {{SUBJECT}} Problem Solver, Formatting Specialist, and JSON Validation Expert.
+
+I will provide a {{SUBJECT}} question paper in the form of a PDF, scanned page, image, screenshot, or pasted text.
+
+Your job is to extract all eligible single-correct-answer multiple-choice questions from the provided source and produce a verified, strictly valid JSON array for import into an online examination portal.
+
+Follow every instruction precisely.
+
+### A. QUESTION EXTRACTION
+
+1. Carefully inspect the source.
+2. Identify every question that has exactly four answer options.
+3. Preserve the meaning, terminology, notation, numerical values, and original option order.
+4. Extract only questions that have exactly one objectively correct answer.
+5. Exclude descriptive, essay-type, numerical-entry, multi-correct, opinion-based, and incomplete questions.
+6. Do not fabricate missing text, passages, diagrams, answer choices, or data.
+7. If part of a question is unreadable or ambiguous, exclude it rather than guessing.
+8. Maintain the original order of all extracted eligible questions.
+9. If a diagram, figure, map, graph, or image is essential but cannot be faithfully represented as text or LaTeX, exclude that question.
+10. If several questions share a passage, table, or data set, copy the full shared text into the `stem` of every question that depends on it, so that each question stands alone.
+11. Keep the original language and script of the source (for example English, Hindi, or Bengali). Do not translate anything.
+
+### B. EXACT JSON SCHEMA
+
+Return a JSON array.
+
+Each element must be an object containing exactly five properties:
+
+- `id`: string.
+- `stem`: string.
+- `options`: array of exactly four strings.
+- `correctOption`: integer.
+- `solution`: string.
+
+Do not include additional keys.
+
+Do not wrap the array inside another object.
+
+### C. UNIQUE QUESTION IDS
+
+Generate an ID for each extracted question.
+
+Format:
+
+`q_<topic>_<randomAlphanumericSuffix>`
+
+Example:
+
+`q_astro_k8mQ4sL2`
+
+Rules:
+
+1. Prefix every ID with `q_`.
+2. Include a brief topic or chapter identifier relevant to {{SUBJECT}}, in lowercase English letters.
+3. Use an alphanumeric suffix containing at least eight reasonably random characters.
+4. Use only letters, digits, underscores, and hyphens. No spaces or other symbols.
+5. Ensure IDs are unique throughout the output.
+6. Do not use sequential IDs such as `q1`, `q2`, or `q3`.
+
+### D. QUESTION STATEMENTS
+
+The `stem` field must contain the complete question statement.
+
+Preserve all conditions, data, values, units, names, dates, quotations, and any passage the question depends on.
+
+Do not combine the four answer options into the question statement.
+
+### E. ANSWER OPTIONS
+
+The `options` field must contain exactly four nonempty strings.
+
+Rules:
+
+1. Maintain original option order.
+2. Remove labels such as (a), (b), (c), (d), A., B., 1., and 2.
+3. Do not insert answer letters inside option strings.
+4. Preserve the content of each option accurately.
+5. Do not invent substitute choices.
+
+### F. CORRECT ANSWER IDENTIFICATION
+
+Use the field `correctOption`.
+
+It must contain a zero-based integer:
+
+- `0` = Option A.
+- `1` = Option B.
+- `2` = Option C.
+- `3` = Option D.
+
+Do not use strings such as `"A"` or `"Option B"`.
+
+Independently solve or reason through every question before selecting the correct answer.
+
+Do not blindly rely on a printed answer key.
+
+If the question has no correct option or more than one correct option, or if the correct answer depends on facts you cannot verify with confidence, exclude it.
+
+### G. SOLUTIONS AND EXPLANATIONS
+
+Every question must contain a correct, self-contained explanation in the `solution` field.
+
+The solution must:
+
+1. State the relevant principle, formula, rule, fact, or concept from {{SUBJECT}}.
+2. Show the essential reasoning or calculation steps.
+3. Explain important transformations, inferences, or logical steps.
+4. Reach the correct conclusion.
+5. Make clear why the selected option is correct and, where helpful, briefly why the main alternatives are wrong.
+
+For conceptual, factual, or language questions, give clear reasoning rather than artificial calculations.
+
+Verify facts, names, dates, signs, units, arithmetic, formulas, and final answers.
+
+Do not return merely "Option A is correct" without justification.
+
+### H. FORMATTING OF FORMULAS, SYMBOLS, AND SPECIAL TEXT
+
+The portal renders formulas with KaTeX.
+
+Use KaTeX-compatible LaTeX wherever the text contains a mathematical expression, formula, equation, symbol, chemical formula or equation, unit with exponents, or scientific notation:
+
+- Inline: `\( ... \)`
+- Display: `\[ ... \]`
+
+Subject guidance:
+
+- Mathematics, Physics, Statistics, Engineering: put every expression, variable, and equation in LaTeX. Write units upright, for example `\\(9.8\\,\\mathrm{m\\,s^{-2}}\\)`.
+- Chemistry: write chemical formulas and reactions in LaTeX using `\\mathrm`, for example `\\(\\mathrm{H_2SO_4}\\)` and `\\(\\mathrm{2H_2 + O_2 \\rightarrow 2H_2O}\\)`. Do not use `\ce`.
+- Biology, Computer Science, Economics, Accountancy, Reasoning: use LaTeX only for genuine formulas, numbers with exponents, or symbols; everything else is plain text.
+- Languages, History, Geography, Political Science, General Knowledge, and other verbal subjects: use plain text. Do not use LaTeX unless the text really contains a formula.
+- Never use unsupported KaTeX commands, and never use HTML or Markdown formatting.
+
+Plain text may contain line breaks written as `\n` (for example in a poem, a passage, or a code snippet).
+
+Since the result must be valid JSON, escape every LaTeX backslash correctly.
+
+Examples of the actual JSON output:
+
+Inline equation:
+
+`"\\(x^2-4x+3=0\\)"`
+
+Fraction:
+
+`"\\(\\frac{x+1}{x-1}\\)"`
+
+Chemical formula:
+
+`"\\(\\mathrm{CO_2}\\)"`
+
+Never emit invalid JSON escape sequences.
+
+### I. JSON FORMATTING REQUIREMENTS
+
+The final answer must be a valid JSON array.
+
+Requirements:
+
+- Start with `[`.
+- End with `]`.
+- Use double quotes for property names and string values.
+- Escape internal quotation marks and backslashes properly.
+- No trailing commas.
+- No comments.
+- No markdown code fences.
+- No explanatory introduction.
+- No closing summary.
+- No `NaN`, `Infinity`, or `undefined`.
+- Exactly four options per question.
+- Correct answer index between 0 and 3.
+- Nonempty solution for every question.
+- No extra properties.
+
+### J. EXAMPLE OF EXPECTED OUTPUT
+
+The example below only shows the structure. Your questions must come from the provided {{SUBJECT}} source.
+
+[
+  {
+    "id": "q_astro_k8mQ4sL2",
+    "stem": "Which planet of the Solar System is known as the Red Planet?",
+    "options": [
+      "Venus",
+      "Mars",
+      "Jupiter",
+      "Mercury"
+    ],
+    "correctOption": 1,
+    "solution": "Mars appears reddish because its surface contains iron oxide (rust), so it is called the Red Planet. Venus is covered by bright clouds, Jupiter is a banded gas giant, and Mercury is a grey, rocky planet. Hence the second option is correct."
+  },
+  {
+    "id": "q_quad_w3Zt9PaX",
+    "stem": "Solve \\(x^2-5x+6=0\\). Which option gives a root?",
+    "options": [
+      "\\(x=1\\)",
+      "\\(x=2\\)",
+      "\\(x=4\\)",
+      "\\(x=5\\)"
+    ],
+    "correctOption": 1,
+    "solution": "Factor the polynomial: \\(x^2-5x+6=(x-2)(x-3)\\). Therefore, \\(x=2\\) or \\(x=3\\). Among the listed options, only \\(x=2\\) appears. Hence the second option is correct."
+  }
+]
+
+### K. FINAL VERIFICATION
+
+Before generating the final answer:
+
+1. Verify every transcription against the original source.
+2. Independently solve or reason through every extracted question.
+3. Confirm that exactly one listed option is correct.
+4. Check that the `correctOption` index identifies that option.
+5. Recheck every solution and every fact in it.
+6. Validate every LaTeX expression.
+7. Validate all JSON escaping.
+8. Check uniqueness of IDs.
+9. Confirm that every object follows the required five-field schema.
+10. Confirm that a standard JSON parser can successfully parse the entire response.
+
+If no eligible questions are present, return `[]`.
+
+**FINAL OUTPUT RULE: Return only the JSON array. No markdown, explanations, or additional text.**
+</script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInAnonymously, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { getFirestore, doc, collection, getDoc, setDoc, updateDoc, writeBatch, onSnapshot, query, where, serverTimestamp, Timestamp, FieldPath, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+
+/* =====================================================================
+   FIREBASE
+   ===================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyB_mA4eCM2H1UijB1U9X3X1MrocSVkE69E",
+  authDomain: "my-test-portal-4ace7.firebaseapp.com",
+  projectId: "my-test-portal-4ace7",
+  storageBucket: "my-test-portal-4ace7.firebasestorage.app",
+  messagingSenderId: "166802553274",
+  appId: "1:166802553274:web:bf6b025de4357529fa0583"
+};
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+/* =====================================================================
+   0. CONSTANTS AND SMALL UTILITIES
+   ===================================================================== */
+const MARK_CORRECT = 4, MARK_WRONG = -1;
+const SAVE_FAIL_MSG = 'Could not save the change. Check your internet connection and try again.';
+const AI_PROMPT_TEMPLATE = document.getElementById('ai-prompt-source').textContent.replace(/^\s+|\s+$/g, '');
+const SUBJECT_SUGGESTIONS = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Hindi', 'Bengali', 'History', 'Geography', 'Political Science', 'Economics', 'Computer Science', 'Accountancy', 'Reasoning & Aptitude', 'General Knowledge'];
+function cleanSubject(raw) { return String(raw == null ? '' : raw).replace(/[\r\n{}]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60); }
+function buildPrompt(subject) { return AI_PROMPT_TEMPLATE.split('{{SUBJECT}}').join(cleanSubject(subject)); }
+function lastSubject() { try { return localStorage.getItem('portal_last_subject') || ''; } catch (e) { return ''; } }
+function rememberSubject(v) { try { localStorage.setItem('portal_last_subject', v); } catch (e) { /* ignore */ } }
+
+const $ = (sel, root) => (root || document).querySelector(sel);
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+function nowIso() { return new Date().toISOString(); }
+function pad2(n) { return String(n).padStart(2, '0'); }
+function isNonEmptyString(v) { return typeof v === 'string' && v.trim().length > 0; }
+function batchKey(b) { return String(b == null ? '' : b).trim().toLowerCase(); }
+function localDateStamp() { const d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function fmtDate(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return '—';
+  try { return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }); } catch (e) { return d.toString(); }
+}
+function fmtDay(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return '—';
+  try { return d.toLocaleDateString(undefined, { dateStyle: 'medium' }); } catch (e) { return d.toDateString(); }
+}
+function fmtDuration(ms) {
+  const total = Math.max(0, Math.ceil(ms / 1000));
+  const h = Math.floor(total / 3600), m = Math.floor((total % 3600) / 60), s = total % 60;
+  return pad2(h) + ':' + pad2(m) + ':' + pad2(s);
+}
+function fmtPct(p) { return (Number.isFinite(p) ? p : 0).toFixed(2) + '%'; }
+function fmtMarks(m) { return m > 0 ? '+' + m : (m < 0 ? '−' + Math.abs(m) : '0'); }
+function fmtScore(n) { return n < 0 ? '−' + Math.abs(n) : String(n); }
+
+/* Phone normalisation: optional +91 / 91 prefix, spaces and hyphens allowed. */
+function normalizePhone(raw) {
+  let s = String(raw == null ? '' : raw).trim().replace(/[\s\-]/g, '');
+  if (s.indexOf('+91') === 0) s = s.slice(3);
+  else if (/^91\d{10}$/.test(s)) s = s.slice(2);
+  return /^[6-9]\d{9}$/.test(s) ? s : null;
+}
+
+function rotr(x, n) { return (x >>> n) | (x << (32 - n)); }
+const SHA_K = [
+  0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+  0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+  0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+  0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+  0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+  0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+  0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+  0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+];
+function sha256Hex(msg) {
+  const bytes = Array.from(new TextEncoder().encode(msg));
+  const bitLen = bytes.length * 8;
+  bytes.push(0x80);
+  while (bytes.length % 64 !== 56) bytes.push(0);
+  const hi = Math.floor(bitLen / 4294967296), lo = bitLen >>> 0;
+  bytes.push((hi >>> 24) & 255, (hi >>> 16) & 255, (hi >>> 8) & 255, hi & 255, (lo >>> 24) & 255, (lo >>> 16) & 255, (lo >>> 8) & 255, lo & 255);
+  let h = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+  const w = new Array(64);
+  for (let i = 0; i < bytes.length; i += 64) {
+    for (let t = 0; t < 16; t++) w[t] = (bytes[i + 4 * t] << 24) | (bytes[i + 4 * t + 1] << 16) | (bytes[i + 4 * t + 2] << 8) | bytes[i + 4 * t + 3];
+    for (let t = 16; t < 64; t++) {
+      const s0 = rotr(w[t - 15], 7) ^ rotr(w[t - 15], 18) ^ (w[t - 15] >>> 3);
+      const s1 = rotr(w[t - 2], 17) ^ rotr(w[t - 2], 19) ^ (w[t - 2] >>> 10);
+      w[t] = (w[t - 16] + s0 + w[t - 7] + s1) | 0;
+    }
+    let a = h[0], b = h[1], c = h[2], d = h[3], e = h[4], f = h[5], g = h[6], hh = h[7];
+    for (let t = 0; t < 64; t++) {
+      const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+      const ch = (e & f) ^ (~e & g);
+      const t1 = (hh + S1 + ch + SHA_K[t] + w[t]) | 0;
+      const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+      const maj = (a & b) ^ (a & c) ^ (b & c);
+      const t2 = (S0 + maj) | 0;
+      hh = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+    }
+    h = [(h[0] + a) | 0, (h[1] + b) | 0, (h[2] + c) | 0, (h[3] + d) | 0, (h[4] + e) | 0, (h[5] + f) | 0, (h[6] + g) | 0, (h[7] + hh) | 0];
+  }
+  return h.map(x => (x >>> 0).toString(16).padStart(8, '0')).join('');
+}
+
+/* A student's Firestore document id is derived from the phone number, so a student can
+   fetch their own record only by knowing the number (the lookup is a 'get', never a 'list'). */
+function studentIdFor(phone) { return 'stu_' + sha256Hex('classroom-portal-v1:' + phone); }
+
+function authErrMsg(e) {
+  const c = e && e.code ? String(e.code) : '';
+  const map = {
+    'auth/invalid-email': 'Enter a valid email address.',
+    'auth/email-already-in-use': 'This email address is already registered.',
+    'auth/weak-password': 'The password is too weak. Use at least 8 characters.',
+    'auth/invalid-credential': 'Incorrect email or password.',
+    'auth/wrong-password': 'Incorrect email or password.',
+    'auth/user-not-found': 'Incorrect email or password.',
+    'auth/invalid-login-credentials': 'Incorrect email or password.',
+    'auth/user-disabled': 'This account has been disabled.',
+    'auth/too-many-requests': 'Too many attempts. Please wait a few minutes and try again.',
+    'auth/network-request-failed': 'Network error. Check your internet connection.',
+    'auth/operation-not-allowed': 'This sign-in method is not enabled in the Firebase console (Authentication → Sign-in method). Enable Email/Password and Anonymous.',
+    'auth/admin-restricted-operation': 'Anonymous sign-in is not enabled in the Firebase console (Authentication → Sign-in method).',
+    'auth/unauthorized-domain': 'This website address is not authorised in Firebase (Authentication → Settings → Authorized domains).',
+    'auth/operation-not-supported-in-this-environment': 'Open this portal from an http(s) address (Firebase Hosting or localhost), not as a local file.',
+    'permission-denied': 'Firestore denied access. Publish the security rules from firestore.rules in the Firebase console.',
+    'unavailable': 'Cannot reach Firestore. Check your internet connection.',
+    'failed-precondition': 'Firestore is not ready. Make sure the Firestore database has been created.'
+  };
+  return map[c] || ('Something went wrong' + (c ? ' (' + c + ')' : '') + '. Please try again.');
+}
+
+/* =====================================================================
+   1. IN-MEMORY MIRROR OF FIRESTORE (kept live by snapshot listeners)
+   ===================================================================== */
+function emptyState() { return { questions: [], students: [], tests: [], attempts: [], submissions: [] }; }
+let state = emptyState();
+let loaded = new Set();          // which listeners have delivered their first snapshot
+let fatal = null;                // blocking error screen
+let appReady = false;            // first auth state + admin lookup finished
+let adminExists = null;          // does config/admin exist?
+let clockOffset = 0;             // server time minus local time (ms)
+let ignoreAuth = 0;              // >0 while this code changes the Auth state itself
+let shownReady = false;
+let renderPending = false;
+const serverNow = () => Date.now() + clockOffset;
+const session = { role: null, studentId: null, student: null };   // in memory only
+
+function normDoc(snap) {
+  const d = snap.data({ serverTimestamps: 'estimate' }) || {};
+  const o = { id: snap.id };
+  Object.keys(d).forEach(k => {
+    const v = d[k];
+    o[k] = (v && typeof v.toDate === 'function') ? v.toDate().toISOString() : v;
+  });
+  if (o.testId && o.studentId && o.answers && typeof o.answers === 'object') {
+    o.reviewFlags = Array.isArray(o.reviewFlags) ? o.reviewFlags : [];
+    o.visited = Array.isArray(o.visited) ? o.visited : [];
+  }
+  o._pending = !!(snap.metadata && snap.metadata.hasPendingWrites);
+  return o;
+}
+function byCreated(a, b) { return (Date.parse(a.createdAt) || 0) - (Date.parse(b.createdAt) || 0) || (a.seq || 0) - (b.seq || 0); }
+
+async function syncClock() {
+  try {
+    if (!/^https?:$/.test(location.protocol)) return;
+    const t0 = Date.now();
+    const r = await fetch(location.href.split('#')[0], { method: 'HEAD', cache: 'no-store' });
+    const t1 = Date.now();
+    const h = r.headers.get('date');
+    const server = h ? Date.parse(h) : NaN;
+    if (!isNaN(server)) clockOffset = server + 500 - (t0 + t1) / 2;   // Date header has 1-second resolution
+  } catch (e) { /* keep local clock */ }
+}
+
+/* ---------- listeners ---------- */
+let unsubs = [];
+let testsUnsub = null;
+const perDocUnsubs = new Map();
+function stopListeners() {
+  unsubs.forEach(u => { try { u(); } catch (e) { /* ignore */ } }); unsubs = [];
+  if (testsUnsub) { try { testsUnsub(); } catch (e) { /* ignore */ } testsUnsub = null; }
+  perDocUnsubs.forEach(u => { try { u(); } catch (e) { /* ignore */ } }); perDocUnsubs.clear();
+  state = emptyState(); loaded = new Set();
+}
+function onListenError(name, err) {
+  console.error('Firestore listener error (' + name + ')', err);
+  if (!session.role) return;
+  fatal = { title: 'Lost access to the database', errors: [authErrMsg(err)] };
+  render();
+}
+const ADMIN_COLS = ['questions', 'students', 'tests', 'attempts', 'submissions'];
+function listenAdmin() {
+  stopListeners();
+  ADMIN_COLS.forEach(name => {
+    unsubs.push(onSnapshot(collection(db, name), snap => {
+      const arr = snap.docs.map(normDoc);
+      if (name === 'questions' || name === 'students' || name === 'tests') arr.sort(byCreated);
+      state[name] = arr; loaded.add(name);
+      onDataChanged(name);
+    }, err => onListenError(name, err)));
+  });
+}
+function listenStudent() {
+  stopListeners();
+  const sid = session.studentId;
+  unsubs.push(onSnapshot(doc(db, 'students', sid), snap => {
+    if (!snap.exists()) { logout({ type: 'error', text: 'Your student account was removed. Please contact your teacher.' }); return; }
+    const s = normDoc(snap);
+    const changed = !testsUnsub || !session.student || session.student.batchKey !== s.batchKey;
+    session.student = s;
+    if (changed) startTestsListener(); else onDataChanged('students');
+  }, err => onListenError('students', err)));
+}
+function startTestsListener() {
+  if (testsUnsub) { try { testsUnsub(); } catch (e) { /* ignore */ } testsUnsub = null; }
+  loaded.delete('tests');
+  const q = query(collection(db, 'tests'), where('batchKey', '==', session.student.batchKey));
+  testsUnsub = onSnapshot(q, snap => {
+    state.tests = snap.docs.map(normDoc).sort(byCreated);
+    loaded.add('tests');
+    syncDocListeners();
+    onDataChanged('tests');
+  }, err => onListenError('tests', err));
+}
+function syncDocListeners() {
+  const sid = session.studentId, wanted = new Set();
+  state.tests.forEach(t => {
+    const id = t.id + '_' + sid;
+    ['attempts', 'submissions'].forEach(col => {
+      const key = col + ':' + id;
+      wanted.add(key);
+      if (perDocUnsubs.has(key)) return;
+      perDocUnsubs.set(key, onSnapshot(doc(db, col, id), { includeMetadataChanges: col === 'attempts' }, snap => {
+        const arr = state[col], i = arr.findIndex(x => x.id === id);
+        if (snap.exists()) { const o = normDoc(snap); if (i >= 0) arr[i] = o; else arr.push(o); }
+        else if (i >= 0) arr.splice(i, 1);
+        loaded.add(key);
+        onDataChanged(col);
+      }, err => onListenError(col, err)));
+    });
+  });
+  Array.from(perDocUnsubs.keys()).forEach(key => {
+    if (wanted.has(key)) return;
+    try { perDocUnsubs.get(key)(); } catch (e) { /* ignore */ }
+    perDocUnsubs.delete(key);
+    const col = key.split(':')[0], id = key.split(':')[1];
+    state[col] = state[col].filter(x => x.id !== id);
+    loaded.delete(key);
+  });
+}
+function isReady() {
+  if (session.role === 'admin') return ADMIN_COLS.every(n => loaded.has(n));
+  if (session.role === 'student') {
+    if (!loaded.has('tests') || !session.student) return false;
+    return state.tests.every(t => loaded.has('attempts:' + t.id + '_' + session.studentId) && loaded.has('submissions:' + t.id + '_' + session.studentId));
+  }
+  return true;
+}
+function relevant(name) {
+  if (ui.screen === 'admin') {
+    const m = {
+      dashboard: ['questions', 'students', 'tests', 'submissions'], questions: ['questions'], students: ['students'],
+      createTest: ['questions', 'students'], tests: ['tests', 'submissions'], results: ['submissions', 'tests', 'students'], backup: []
+    }[ui.section] || [];
+    return m.indexOf(name) >= 0;
+  }
+  return ['student', 'instructions', 'exam', 'result'].indexOf(ui.screen) >= 0;
+}
+function onDataChanged(name) {
+  const ready = isReady();
+  if (ready) reconcileExpired();
+  if (!ready || !shownReady || relevant(name)) renderSoon();
+}
+function isTypingTarget(el) {
+  if (!el) return false;
+  if (el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') return true;
+  return el.tagName === 'INPUT' && ['radio', 'checkbox', 'button', 'submit'].indexOf(el.type) < 0;
+}
+/* Snapshot-driven redraws never interrupt typing; they run when the field loses focus. */
+function renderSoon() {
+  const a = document.activeElement;
+  if (a && $('#app').contains(a) && isTypingTarget(a)) { renderPending = true; return; }
+  render();
+}
+
+/* =====================================================================
+   2. VALIDATION (questions)
+   ===================================================================== */
+const Q_KEYS = ['id', 'stem', 'options', 'correctOption', 'solution'];
+const ID_RE = /^[A-Za-z0-9_-]{3,100}$/;
+function checkQuestion(q, n) {
+  const p = 'Question ' + n + ': ';
+  if (q === null || typeof q !== 'object' || Array.isArray(q)) return [p + 'each question must be a JSON object.'];
+  const errs = [];
+  Q_KEYS.forEach(k => { if (!Object.prototype.hasOwnProperty.call(q, k)) errs.push(p + 'missing required field "' + k + '".'); });
+  Object.keys(q).forEach(k => { if (Q_KEYS.indexOf(k) < 0) errs.push(p + 'unexpected field "' + k + '" is not allowed.'); });
+  if ('id' in q) {
+    if (!isNonEmptyString(q.id)) errs.push(p + 'id must be a nonempty string.');
+    else if (!ID_RE.test(q.id) || /^__.*__$/.test(q.id)) errs.push(p + 'id may only contain letters, digits, underscores and hyphens (3–100 characters).');
+  }
+  if ('stem' in q && !isNonEmptyString(q.stem)) errs.push(p + 'stem cannot be empty.');
+  if ('options' in q) {
+    if (!Array.isArray(q.options)) errs.push(p + 'options must be an array of exactly four answers.');
+    else if (q.options.length !== 4) errs.push(p + 'options must contain exactly four answers.');
+    else q.options.forEach((o, i) => { if (!isNonEmptyString(o)) errs.push(p + 'option ' + 'ABCD'[i] + ' must be a nonempty string.'); });
+  }
+  if ('correctOption' in q && !(Number.isInteger(q.correctOption) && q.correctOption >= 0 && q.correctOption <= 3)) errs.push(p + 'correctOption must be an integer between 0 and 3.');
+  if ('solution' in q && !isNonEmptyString(q.solution)) errs.push(p + 'solution cannot be empty.');
+  return errs;
+}
+function validateQuestionBatch(text) {
+  const out = { valid: false, errors: [], questions: [], text: text, detail: '' };
+  if (!isNonEmptyString(text)) { out.errors.push('Paste the question JSON before validating.'); return out; }
+  let data;
+  try { data = JSON.parse(text); }
+  catch (e) { out.errors.push('Invalid JSON: check quotation marks, commas, and brackets.'); out.detail = e.message; return out; }
+  if (!Array.isArray(data)) { out.errors.push('The top-level JSON value must be an array of questions.'); return out; }
+  if (data.length === 0) { out.errors.push('The array is empty. Provide at least one question.'); return out; }
+  const seen = new Set(), existing = new Set(state.questions.map(q => q.id)), reported = new Set();
+  data.forEach((q, i) => {
+    checkQuestion(q, i + 1).forEach(m => out.errors.push(m));
+    if (q && typeof q === 'object' && !Array.isArray(q) && isNonEmptyString(q.id)) {
+      if ((seen.has(q.id) || existing.has(q.id)) && !reported.has(q.id)) { out.errors.push('Duplicate question ID detected: ' + q.id + '.'); reported.add(q.id); }
+      seen.add(q.id);
+    }
+  });
+  if (out.errors.length === 0) { out.valid = true; out.questions = clone(data); }
+  return out;
+}
+
+/* =====================================================================
+   3. GRADING
+   ===================================================================== */
+function gradeAnswers(test, answers) {
+  let c = 0, w = 0, u = 0;
+  test.questionSnapshots.forEach(q => {
+    const a = answers ? answers[q.id] : null;
+    if (a === null || a === undefined) u++;
+    else if (a === q.correctOption) c++;
+    else w++;
+  });
+  const N = test.questionSnapshots.length;
+  const max = MARK_CORRECT * N;
+  const score = MARK_CORRECT * c + MARK_WRONG * w;
+  const percentage = max > 0 ? (score / max) * 100 : 0;
+  const passed = score * 100 >= test.passMarkPercent * max - 1e-9;
+  return { correctCount: c, incorrectCount: w, unansweredCount: u, score: score, maximumScore: max, percentage: percentage, passed: passed };
+}
+function questionMarks(q, sel) {
+  if (sel === null || sel === undefined) return 0;
+  return sel === q.correctOption ? MARK_CORRECT : MARK_WRONG;
+}
+
+/* =====================================================================
+   4. SESSION, UI STATE AND RENDERING CORE
+   ===================================================================== */
+function freshUi() {
+  return {
+    screen: 'welcome', section: 'dashboard', flash: null, scrollTop: true,
+    drafts: {}, selected: new Set(), formErrors: {}, jsonText: '', qCheck: null, showPromptManual: false,
+    resultsFilter: 'all', detailSubId: null, instrTestId: null, exam: null, resultSubId: null,
+    busy: false, focusChecked: false
+  };
+}
+let ui = freshUi();
+
+function currentStudent() { return session.role === 'student' ? session.student : null; }
+function draft(key, def) { return ui.drafts[key] !== undefined ? ui.drafts[key] : (def === undefined ? '' : def); }
+function fieldErr(scope, key) {
+  const e = ui.formErrors[scope] && ui.formErrors[scope][key];
+  return e ? '<div class="err" id="err-' + scope + '-' + key + '" role="alert">' + esc(e) + '</div>' : '';
+}
+function aria(scope, key) { return ui.formErrors[scope] && ui.formErrors[scope][key] ? ' aria-invalid="true" aria-describedby="err-' + scope + '-' + key + '"' : ''; }
+function flashHtml() {
+  if (!ui.flash) return '';
+  return '<div class="flash ' + esc(ui.flash.type) + '" role="' + (ui.flash.type === 'error' ? 'alert' : 'status') + '">' + esc(ui.flash.text) + '</div>';
+}
+function go(screen, flash) { ui.screen = screen; ui.flash = flash || null; ui.formErrors = {}; ui.scrollTop = true; render(); }
+function navSection(section, flash) { ui.section = section; ui.detailSubId = null; ui.flash = flash || null; ui.formErrors = {}; ui.scrollTop = true; render(); }
+function notify(type, text) { ui.flash = { type: type, text: text }; render(); }
+
+function renderMath(el) {
+  if (typeof window.renderMathInElement !== 'function') return;
+  try {
+    window.renderMathInElement(el || document.body, {
+      delimiters: [{ left: '\\[', right: '\\]', display: true }, { left: '\\(', right: '\\)', display: false }],
+      throwOnError: false, errorColor: '#F87171', strict: 'ignore', trust: false
+    });
+  } catch (e) { console.warn('KaTeX rendering failed', e); }
+}
+
+function render() {
+  renderPending = false;
+  const root = $('#app');
+  const y = window.scrollY;
+  let html = '', showing = null;
+  if (fatal) { html = viewFatal(); }
+  else if (!appReady) { html = viewLoading('Connecting to Firebase…'); }
+  else {
+    if (ui.screen === 'admin' && session.role !== 'admin') ui.screen = 'welcome';
+    if (['student', 'instructions', 'exam', 'result'].indexOf(ui.screen) >= 0 && !currentStudent()) ui.screen = 'welcome';
+    const needsData = ['admin', 'student', 'instructions', 'exam', 'result'].indexOf(ui.screen) >= 0;
+    if (needsData && !isReady()) { shownReady = false; html = viewLoading('Loading data from Firebase…'); }
+    else {
+      shownReady = true;
+      if (ui.screen === 'exam') prepareExam();
+      showing = ui.screen;
+      switch (ui.screen) {
+        case 'adminSetup': html = viewAdminSetup(); break;
+        case 'adminLogin': html = viewAdminLogin(); break;
+        case 'admin': html = viewAdmin(); break;
+        case 'studentLogin': html = viewStudentLogin(); break;
+        case 'student': html = viewStudentDashboard(); break;
+        case 'instructions': html = viewInstructions(); break;
+        case 'exam': html = viewExam(); break;
+        case 'result': html = viewStudentResult(); break;
+        default: html = viewWelcome();
+      }
+    }
+  }
+  root.innerHTML = html;
+  if (showing !== 'exam') stopTimer(); else startTimer();
+  renderMath(root);
+  if (ui.scrollTop) { window.scrollTo(0, 0); ui.scrollTop = false; } else window.scrollTo(0, y);
+  const modal = $('.modal', root);
+  if (modal) { const b = $('button', modal); if (b) b.focus(); }
+  else if (ui.focusChecked) { const c = $('input[name="opt"]:checked', root); if (c) c.focus(); }
+  ui.focusChecked = false;
+}
+
+/* =====================================================================
+   5. AUTHENTICATION
+   ===================================================================== */
+function requireAdmin() {
+  if (session.role !== 'admin') { go('welcome', { type: 'error', text: 'Please log in as the administrator to continue.' }); return false; }
+  return true;
+}
+function requireStudent() {
+  if (!currentStudent()) { go('welcome', { type: 'error', text: 'Please log in as a student to continue.' }); return false; }
+  return true;
+}
+async function refreshAdminExists() {
+  const snap = await getDoc(doc(db, 'config', 'admin'));
+  adminExists = snap.exists();
+  return snap;
+}
+async function verifyAdmin(user) {
+  const snap = await getDoc(doc(db, 'config', 'admin'));
+  adminExists = snap.exists();
+  return snap.exists() && snap.data().uid === user.uid;
+}
+function startAdminSession() {
+  session.role = 'admin'; session.studentId = null; session.student = null;
+  ui = freshUi(); ui.screen = 'admin'; ui.section = 'dashboard';
+  listenAdmin();
+}
+
+let firstAuth = true;
+async function handleAuth(user) {
+  if (firstAuth) {
+    firstAuth = false;
+    try {
+      await refreshAdminExists();
+      if (user && !user.isAnonymous) {
+        if (await verifyAdmin(user)) startAdminSession();
+        else {
+          ignoreAuth++;
+          try { await signOut(auth); } finally { ignoreAuth--; }
+          ui.flash = { type: 'error', text: 'The signed-in account is not the administrator account.' };
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      fatal = { title: 'Cannot connect to Firebase', errors: [authErrMsg(e)] };
+    }
+    appReady = true; render();
+    return;
+  }
+  if (!user && session.role) logout({ type: 'warning', text: 'You were signed out. Please log in again.' });
+}
+
+async function doAdminSetup(form) {
+  if (ui.busy) return;
+  const email = form.elements.email.value.trim(), pw = form.elements.password.value, pw2 = form.elements.password2.value;
+  ui.drafts.adminEmail = email;
+  const errs = {};
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = 'Enter a valid email address.';
+  if (pw.length < 8) errs.password = 'The password must be at least 8 characters long.';
+  else if (pw !== pw2) errs.password2 = 'The two password entries do not match.';
+  if (Object.keys(errs).length) { ui.formErrors = { setup: errs }; ui.flash = null; render(); return; }
+  ui.busy = true; ignoreAuth++;
+  try {
+    await refreshAdminExists();
+    if (adminExists) { go('adminLogin', { type: 'warning', text: 'An administrator is already registered. Please log in.' }); return; }
+    const cred = await createUserWithEmailAndPassword(auth, email, pw);
+    try {
+      await setDoc(doc(db, 'config', 'admin'), { uid: cred.user.uid, createdAt: serverTimestamp() });
+    } catch (e) {
+      console.error(e);
+      try { await cred.user.delete(); } catch (e2) { /* ignore */ }
+      try { await signOut(auth); } catch (e3) { /* ignore */ }
+      go('adminSetup', { type: 'error', text: 'Registration failed: ' + authErrMsg(e) + ' (an administrator may already exist).' });
+      return;
+    }
+    adminExists = true;
+    startAdminSession();
+    go('admin', { type: 'success', text: 'Administrator account created. You are now logged in.' });
+  } catch (e) {
+    console.error(e);
+    go('adminSetup', { type: 'error', text: authErrMsg(e) });
+  } finally { ignoreAuth--; ui.busy = false; }
+}
+async function doAdminLogin(form) {
+  if (ui.busy) return;
+  const email = form.elements.email.value.trim(), pw = form.elements.password.value;
+  ui.drafts.adminEmail = email;
+  if (!email || !pw) { go('adminLogin', { type: 'error', text: 'Enter your email address and password.' }); return; }
+  ui.busy = true; ignoreAuth++;
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email, pw);
+    if (!(await verifyAdmin(cred.user))) {
+      await signOut(auth);
+      go('adminLogin', { type: 'error', text: 'This account is not the administrator account of this portal.' });
+      return;
+    }
+    startAdminSession();
+    go('admin');
+  } catch (e) {
+    console.error(e);
+    go('adminLogin', { type: 'error', text: authErrMsg(e) });
+  } finally { ignoreAuth--; ui.busy = false; }
+}
+async function forgotPassword() {
+  const el = $('#email');
+  const email = el ? el.value.trim() : '';
+  if (el) ui.drafts.adminEmail = email;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { go('adminLogin', { type: 'error', text: 'Type your administrator email address first, then press "Forgot password?".' }); return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    go('adminLogin', { type: 'success', text: 'If that email belongs to the administrator account, a password-reset link has been sent.' });
+  } catch (e) {
+    console.error(e);
+    go('adminLogin', { type: 'error', text: authErrMsg(e) });
+  }
+}
+async function doStudentLogin(form) {
+  if (ui.busy) return;
+  const phone = normalizePhone(form.elements.phone.value);
+  if (!phone) { go('studentLogin', { type: 'error', text: 'Enter a valid 10-digit WhatsApp number.' }); return; }
+  ui.busy = true; ignoreAuth++;
+  try {
+    if (auth.currentUser && !auth.currentUser.isAnonymous) await signOut(auth);
+    if (!auth.currentUser) await signInAnonymously(auth);
+    const id = studentIdFor(phone);
+    const snap = await getDoc(doc(db, 'students', id));
+    if (!snap.exists()) { go('studentLogin', { type: 'error', text: 'No student account was found for this WhatsApp number. Please contact your teacher.' }); return; }
+    stopTimer();
+    session.role = 'student'; session.studentId = id; session.student = normDoc(snap);
+    ui = freshUi(); ui.screen = 'student';
+    listenStudent();
+    go('student');
+  } catch (e) {
+    console.error(e);
+    go('studentLogin', { type: 'error', text: authErrMsg(e) });
+  } finally { ignoreAuth--; ui.busy = false; }
+}
+async function logout(flash) {
+  stopTimer(); stopListeners();
+  session.role = null; session.studentId = null; session.student = null;
+  ui = freshUi();
+  if (flash) ui.flash = flash;
+  render();
+  ignoreAuth++;
+  try { if (auth.currentUser && !auth.currentUser.isAnonymous) await signOut(auth); }
+  catch (e) { console.error(e); }
+  finally { ignoreAuth--; }
+}
+
+/* =====================================================================
+   6. EXAMINATION ATTEMPTS, TIMER AND FINALISATION
+   ===================================================================== */
+const finalizing = new Set();
+const failBackoff = new Map();
+function findSubmission(testId, studentId) { return state.submissions.find(s => s.testId === testId && s.studentId === studentId) || null; }
+function findAttempt(testId, studentId) { return state.attempts.find(a => a.testId === testId && a.studentId === studentId) || null; }
+function deadlineMs(att, test) { return Date.parse(att.startedAt) + test.durationMinutes * 60000; }
+
+/* Creates the final submission. The local copy is added immediately (the SDK applies writes
+   locally first) and replaced by the server copy when the snapshot arrives. */
+function finalizeAttempt(attemptId, reason) {
+  if (finalizing.has(attemptId)) return null;
+  const att = state.attempts.find(a => a.id === attemptId);
+  if (!att) return null;
+  const existing = findSubmission(att.testId, att.studentId);
+  if (existing) return existing;
+  const test = state.tests.find(t => t.id === att.testId);
+  if (!test) return null;
+  const back = failBackoff.get(attemptId);
+  if (back && Date.now() < back) return null;
+  const dl = deadlineMs(att, test);
+  const finalReason = (reason === 'timeout' || serverNow() >= dl) ? 'timeout' : 'manual';
+  const answers = {};
+  test.questionSnapshots.forEach(q => { answers[q.id] = Number.isInteger(att.answers[q.id]) ? att.answers[q.id] : null; });
+  const g = gradeAnswers(test, answers);
+  const startedMs = Date.parse(att.startedAt);
+  const local = Object.assign({
+    id: attemptId, testId: att.testId, studentId: att.studentId, startedAt: att.startedAt,
+    submittedAt: new Date(finalReason === 'timeout' ? dl : serverNow()).toISOString(), answers: answers
+  }, g, { submissionReason: finalReason });
+  state.submissions.push(local);
+  finalizing.add(attemptId);
+  const payload = Object.assign({
+    testId: att.testId, studentId: att.studentId, startedAt: Timestamp.fromMillis(startedMs),
+    submittedAt: finalReason === 'timeout' ? Timestamp.fromMillis(dl) : serverTimestamp(), answers: answers
+  }, g, { submissionReason: finalReason });
+  setDoc(doc(db, 'submissions', attemptId), payload).catch(e => {
+    console.error('Submission failed', e);
+    state.submissions = state.submissions.filter(s => s !== local);
+    failBackoff.set(attemptId, Date.now() + 30000);
+    if (session.role === 'student') notify('error', 'Your submission could not be saved: ' + authErrMsg(e));
+    else renderSoon();
+  }).finally(() => { finalizing.delete(attemptId); });
+  return local;
+}
+function reconcileExpired() {
+  if (!isReady()) return;
+  const now = serverNow();
+  state.attempts.slice().forEach(a => {
+    if (findSubmission(a.testId, a.studentId)) return;
+    const t = state.tests.find(x => x.id === a.testId);
+    if (t && deadlineMs(a, t) <= now) finalizeAttempt(a.id, 'timeout');
+  });
+}
+/* Called by render(): validates the exam context and redirects if it is no longer usable. */
+function prepareExam() {
+  const st = currentStudent();
+  if (!ui.exam || !st) { ui.screen = 'student'; return; }
+  const sub = findSubmission(ui.exam.testId, st.id);
+  if (sub) { ui.exam = null; ui.resultSubId = sub.id; ui.screen = 'result'; return; }
+  const test = state.tests.find(t => t.id === ui.exam.testId);
+  const att = findAttempt(ui.exam.testId, st.id);
+  if (!att || !test) { ui.exam = null; ui.screen = 'student'; return; }
+  if (deadlineMs(att, test) <= serverNow()) {
+    const s2 = finalizeAttempt(att.id, 'timeout');
+    ui.exam = null;
+    if (s2) { ui.resultSubId = s2.id; ui.screen = 'result'; ui.flash = { type: 'warning', text: 'Time is up. Your examination was submitted automatically.' }; }
+    else { ui.screen = 'student'; ui.flash = { type: 'error', text: SAVE_FAIL_MSG }; }
+    ui.scrollTop = true;
+  }
+}
+function onExamWriteError(e) {
+  console.error(e);
+  if (e && e.code === 'permission-denied') notify('warning', 'Your last change could not be saved. The time may be up.');
+  else notify('error', SAVE_FAIL_MSG);
+}
+function updateAttempt(att) {
+  const fv = Array.prototype.slice.call(arguments, 1);
+  updateDoc(doc(db, 'attempts', att.id), ...fv, 'updatedAt', serverTimestamp()).catch(onExamWriteError);
+}
+function goQuestion(index) {
+  if (!ui.exam) return;
+  const st = currentStudent();
+  const test = state.tests.find(t => t.id === ui.exam.testId);
+  const att = st && findAttempt(ui.exam.testId, st.id);
+  if (!test || !att) return;
+  const i = Math.max(0, Math.min(test.questionSnapshots.length - 1, index));
+  ui.exam.index = i;
+  const qid = test.questionSnapshots[i].id;
+  if (att.visited.indexOf(qid) < 0) { att.visited.push(qid); updateAttempt(att, 'visited', arrayUnion(qid)); }
+  render();
+}
+function beginExam() {
+  if (ui.busy) return;
+  const st = currentStudent(), test = state.tests.find(t => t.id === ui.instrTestId);
+  if (!st || !test || batchKey(test.batch) !== batchKey(st.batch)) { go('student'); return; }
+  const sub = findSubmission(test.id, st.id);
+  if (sub) { ui.resultSubId = sub.id; go('result'); return; }
+  let att = findAttempt(test.id, st.id);
+  if (!att) {
+    const id = test.id + '_' + st.id;
+    const answers = {};
+    test.questionSnapshots.forEach(q => { answers[q.id] = null; });
+    const local = { id: id, testId: test.id, studentId: st.id, startedAt: new Date(serverNow()).toISOString(), answers: answers, reviewFlags: [], visited: [], updatedAt: nowIso(), _pending: true };
+    state.attempts.push(local);
+    att = local;
+    setDoc(doc(db, 'attempts', id), {
+      testId: test.id, studentId: st.id, startedAt: serverTimestamp(), answers: answers, reviewFlags: [], visited: [], updatedAt: serverTimestamp()
+    }).catch(e => {
+      console.error(e);
+      state.attempts = state.attempts.filter(a => a !== local);
+      ui.exam = null;
+      go('student', { type: 'error', text: 'Could not start the examination: ' + authErrMsg(e) });
+    });
+  }
+  ui.exam = { testId: test.id, index: 0, confirmOpen: false };
+  ui.screen = 'exam'; ui.flash = null; ui.scrollTop = true;
+  goQuestion(0);
+}
+function resumeExam(testId) {
+  const st = currentStudent(); if (!st) return;
+  const sub = findSubmission(testId, st.id);
+  if (sub) { ui.resultSubId = sub.id; go('result'); return; }
+  if (!findAttempt(testId, st.id)) { go('student'); return; }
+  ui.exam = { testId: testId, index: 0, confirmOpen: false };
+  ui.screen = 'exam'; ui.flash = null; ui.scrollTop = true;
+  goQuestion(0);
+}
+/* Context for an exam action, or null if the attempt has expired or finished (render() then redirects). */
+function examContext() {
+  const st = currentStudent();
+  if (!st || !ui.exam) return null;
+  const test = state.tests.find(t => t.id === ui.exam.testId);
+  const att = findAttempt(ui.exam.testId, st.id);
+  if (!att || !test || findSubmission(test.id, st.id) || deadlineMs(att, test) <= serverNow()) { render(); return null; }
+  return { att: att, test: test, st: st, q: test.questionSnapshots[ui.exam.index] };
+}
+function setAnswer(v) {
+  const c = examContext(); if (!c) return;
+  c.att.answers[c.q.id] = v;
+  updateAttempt(c.att, new FieldPath('answers', c.q.id), v);
+  ui.focusChecked = true; render();
+}
+function clearAnswer() {
+  const c = examContext(); if (!c) return;
+  c.att.answers[c.q.id] = null;
+  updateAttempt(c.att, new FieldPath('answers', c.q.id), null);
+  render();
+}
+function toggleReview() {
+  const c = examContext(); if (!c) return;
+  const i = c.att.reviewFlags.indexOf(c.q.id);
+  if (i >= 0) { c.att.reviewFlags.splice(i, 1); updateAttempt(c.att, 'reviewFlags', arrayRemove(c.q.id)); }
+  else { c.att.reviewFlags.push(c.q.id); updateAttempt(c.att, 'reviewFlags', arrayUnion(c.q.id)); }
+  render();
+}
+function submitExam() {
+  if (ui.busy) return;
+  const c = examContext(); if (!c) return;
+  const sub = finalizeAttempt(c.att.id, 'manual');
+  if (!sub) { ui.exam.confirmOpen = false; notify('error', SAVE_FAIL_MSG); return; }
+  ui.exam = null; ui.resultSubId = sub.id;
+  go('result');
+}
+
+/* Timer (counts down to the deadline derived from the server-stamped start time) */
+let timerHandle = null;
+function startTimer() { if (timerHandle === null) timerHandle = setInterval(tick, 1000); }
+function stopTimer() { if (timerHandle !== null) { clearInterval(timerHandle); timerHandle = null; } }
+function tick() {
+  if (ui.screen !== 'exam' || !ui.exam) { stopTimer(); return; }
+  const st = currentStudent();
+  const test = state.tests.find(t => t.id === ui.exam.testId);
+  const att = st && findAttempt(ui.exam.testId, st.id);
+  if (!test || !att) { stopTimer(); render(); return; }
+  const rem = Math.max(0, deadlineMs(att, test) - serverNow());
+  const el = $('#timer');
+  if (el) {
+    el.textContent = fmtDuration(rem);
+    el.classList.toggle('low', rem <= 300000 && rem > 60000);
+    el.classList.toggle('crit', rem <= 60000);
+  }
+  if (rem <= 0) {
+    stopTimer();
+    const sub = finalizeAttempt(att.id, 'timeout');
+    if (sub) { ui.exam = null; ui.resultSubId = sub.id; go('result', { type: 'warning', text: 'Time is up. Your examination was submitted automatically.' }); }
+    else { startTimer(); }
+  }
+}
+
+/* =====================================================================
+   7. ADMINISTRATOR ACTIONS
+   ===================================================================== */
+async function copyText(text) {
+  try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return true; } } catch (e) { /* fall through */ }
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:-2000px;left:0;opacity:0';
+    document.body.appendChild(ta); ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+    const ok = document.execCommand && document.execCommand('copy');
+    document.body.removeChild(ta);
+    return !!ok;
+  } catch (e) { return false; }
+}
+async function copyPrompt() {
+  const subject = cleanSubject(draft('promptSubject', lastSubject()));
+  if (!subject) { ui.formErrors = { prompt: { subject: 'Choose or type the subject of the question paper first.' } }; ui.flash = null; render(); return; }
+  ui.drafts.promptSubject = subject; rememberSubject(subject);
+  const text = buildPrompt(subject);
+  const ok = await copyText(text);
+  ui.formErrors = {};
+  if (ok) { ui.showPromptManual = false; notify('success', subject + ' prompt copied to the clipboard. Paste it into your AI assistant together with the question paper.'); }
+  else { ui.manualPromptText = text; ui.showPromptManual = true; notify('warning', 'Automatic copying is blocked by this browser. The full prompt is shown below; select it and copy it manually.'); }
+}
+function validateQuestions() {
+  const ta = $('#jsonText');
+  ui.jsonText = ta ? ta.value : ui.jsonText;
+  ui.qCheck = validateQuestionBatch(ui.jsonText);
+  ui.flash = null;
+  render();
+}
+async function saveQuestions() {
+  if (!requireAdmin() || ui.busy) return;
+  const chk = ui.qCheck;
+  if (!chk || !chk.valid || chk.text !== ui.jsonText) { notify('error', 'Validate the current JSON before saving.'); return; }
+  const fresh = validateQuestionBatch(ui.jsonText);
+  if (!fresh.valid) { ui.qCheck = fresh; render(); return; }
+  const incoming = fresh.questions.map(q => ({ id: q.id, stem: q.stem, options: q.options.slice(), correctOption: q.correctOption, solution: q.solution }));
+  ui.busy = true; notify('info', 'Saving ' + incoming.length + ' question(s)…');
+  try {
+    for (let i = 0; i < incoming.length; i += 400) {
+      const batch = writeBatch(db);
+      incoming.slice(i, i + 400).forEach((q, j) => {
+        batch.set(doc(db, 'questions', q.id), { stem: q.stem, options: q.options, correctOption: q.correctOption, solution: q.solution, createdAt: serverTimestamp(), seq: i + j });
+      });
+      await batch.commit();
+    }
+    ui.jsonText = ''; ui.qCheck = null;
+    notify('success', incoming.length + ' question' + (incoming.length === 1 ? '' : 's') + ' saved to the question bank.');
+  } catch (e) {
+    console.error(e);
+    notify('error', authErrMsg(e) + ' Some questions may not have been saved; check the question bank before retrying.');
+  } finally { ui.busy = false; }
+}
+async function addStudent() {
+  if (!requireAdmin() || ui.busy) return;
+  const name = draft('stuName').trim(), phoneRaw = draft('stuPhone'), batchRaw = draft('stuBatch').trim();
+  const errs = {};
+  if (!name) errs.name = 'Student name is required.';
+  const phone = normalizePhone(phoneRaw);
+  if (!phone) errs.phone = 'Enter a valid Indian mobile number (10 digits starting with 6–9; +91 prefix optional).';
+  else if (state.students.some(s => s.phone === phone)) errs.phone = 'This WhatsApp number is already registered.';
+  if (!batchRaw) errs.batch = 'Batch is required.';
+  if (Object.keys(errs).length) { ui.formErrors = { student: errs }; ui.flash = null; render(); return; }
+  const existingBatch = state.students.find(s => batchKey(s.batch) === batchKey(batchRaw));
+  const label = existingBatch ? existingBatch.batch : batchRaw;
+  ui.busy = true;
+  try {
+    const ref = doc(db, 'students', studentIdFor(phone));
+    if ((await getDoc(ref)).exists()) { ui.formErrors = { student: { phone: 'This WhatsApp number is already registered.' } }; ui.flash = null; render(); return; }
+    await setDoc(ref, { name: name, phone: phone, batch: label, batchKey: batchKey(label), createdAt: serverTimestamp() });
+    ui.drafts.stuName = ''; ui.drafts.stuPhone = ''; ui.drafts.stuBatch = ''; ui.formErrors = {};
+    notify('success', 'Student "' + name + '" registered in batch ' + label + '.');
+  } catch (e) {
+    console.error(e); ui.formErrors = {}; notify('error', authErrMsg(e));
+  } finally { ui.busy = false; }
+}
+function uniqueBatches() {
+  const seen = new Set(), out = [];
+  state.students.forEach(s => { const k = batchKey(s.batch); if (!seen.has(k)) { seen.add(k); out.push(s.batch); } });
+  return out.sort((a, b) => a.localeCompare(b));
+}
+function selectedQuestionIds() { return state.questions.filter(q => ui.selected.has(q.id)).map(q => q.id); }
+async function deployTest() {
+  if (!requireAdmin() || ui.busy) return;
+  const title = draft('testTitle').trim(), batch = draft('testBatch').trim();
+  const durStr = String(draft('testDuration', '30')).trim(), passStr = String(draft('testPass', '40')).trim();
+  const errs = {};
+  if (!title) errs.title = 'Test title is required.';
+  const batches = uniqueBatches();
+  if (!batches.length) errs.batch = 'Register at least one student before creating a test.';
+  else if (!batch) errs.batch = 'Select a target batch.';
+  else if (!batches.some(b => batchKey(b) === batchKey(batch))) errs.batch = 'The selected batch has no registered students.';
+  let dur = NaN;
+  if (!/^\d+$/.test(durStr)) errs.duration = 'Duration must be a whole number of minutes.';
+  else { dur = parseInt(durStr, 10); if (dur < 1 || dur > 180) errs.duration = 'Duration must be between 1 and 180 minutes.'; }
+  let pass = NaN;
+  if (passStr === '' || !isFinite(Number(passStr))) errs.pass = 'Enter a pass mark between 0 and 100.';
+  else { pass = Number(passStr); if (pass < 0 || pass > 100) errs.pass = 'Pass mark must be between 0 and 100.'; }
+  const ids = Array.from(ui.selected);
+  if (ids.length === 0) errs.questions = 'Select at least one question.';
+  else if (ids.some(id => !state.questions.some(q => q.id === id))) errs.questions = 'One or more selected questions no longer exist.';
+  if (Object.keys(errs).length) { ui.formErrors = { test: errs }; ui.flash = null; render(); return; }
+  const batchLabel = batches.find(b => batchKey(b) === batchKey(batch));
+  const test = {
+    title: title, batch: batchLabel, batchKey: batchKey(batchLabel), durationMinutes: dur, passMarkPercent: pass,
+    questionSnapshots: state.questions.filter(q => ui.selected.has(q.id)).map(q => ({ id: q.id, stem: q.stem, options: q.options.slice(), correctOption: q.correctOption, solution: q.solution })),
+    status: 'deployed', createdAt: serverTimestamp(), deployedAt: serverTimestamp()
+  };
+  const size = new TextEncoder().encode(JSON.stringify(test.questionSnapshots)).length;
+  if (size > 800000) { ui.formErrors = { test: { questions: 'The selected questions are too large for one test (limit about 800 KB). Select fewer questions.' } }; ui.flash = null; render(); return; }
+  ui.busy = true;
+  try {
+    await setDoc(doc(collection(db, 'tests')), test);
+    ui.drafts.testTitle = ''; ui.drafts.testBatch = ''; ui.drafts.testDuration = '30'; ui.drafts.testPass = '40'; ui.selected = new Set(); ui.formErrors = {};
+    notify('success', 'Test deployed successfully for batch ' + batchLabel + '.');
+  } catch (e) {
+    console.error(e); ui.formErrors = {}; notify('error', authErrMsg(e));
+  } finally { ui.busy = false; }
+}
+function updateTestSummary() {
+  const box = $('#testSummary'); if (box) box.innerHTML = testSummaryHtml();
+  const cnt = $('#selCount'); if (cnt) cnt.textContent = selectedQuestionIds().length + ' selected';
+}
+function exportBackup() {
+  if (session.role !== 'admin') return;
+  try {
+    const strip = o => { const c = {}; Object.keys(o).forEach(k => { if (k.charAt(0) !== '_') c[k] = o[k]; }); return c; };
+    const out = { exportedAt: nowIso(), source: 'firestore', questions: state.questions.map(strip), students: state.students.map(strip), tests: state.tests.map(strip), attempts: state.attempts.map(strip), submissions: state.submissions.map(strip) };
+    const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'classroom-exam-backup-' + localDateStamp() + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    notify('success', 'Backup file generated. Check your browser’s downloads for classroom-exam-backup-' + localDateStamp() + '.json.');
+  } catch (e) { notify('error', 'Could not create the backup file: ' + e.message); }
+}
+
+/* =====================================================================
+   8. VIEWS
+   ===================================================================== */
+const LOGO = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M8 8h8M8 12h5"/></svg>';
+const CLOUD_NOTICE = 'Data is stored in Google Firebase (Firestore) and is shared in real time between the teacher and all students on every device. A student’s registered phone number works as a simple password: it identifies the student but is not strong security. Keep the number list private.';
+
+function viewLoading(msg) {
+  return '<main class="center-wrap narrow"><div class="card" style="text-align:center"><div class="spinner" aria-hidden="true"></div><p role="status">' + esc(msg) + '</p></div></main>';
+}
+function viewFatal() {
+  return '<main class="center-wrap"><div class="card"><h1>' + esc(fatal.title) + '</h1>' +
+    '<ul class="errs">' + fatal.errors.map(e => '<li>' + esc(e) + '</li>').join('') + '</ul>' +
+    '<p class="muted" style="margin-top:1rem">Checklist:</p><ul>' +
+    '<li>Firebase console → Build → <strong>Firestore Database</strong> → create the database.</li>' +
+    '<li>Firestore → <strong>Rules</strong> → paste the contents of <code>firestore.rules</code> and publish.</li>' +
+    '<li>Authentication → Sign-in method → enable <strong>Email/Password</strong> and <strong>Anonymous</strong>.</li>' +
+    '<li>Open this page from <code>http(s)://</code> (Firebase Hosting or localhost) and make sure the domain is listed under Authentication → Settings → Authorized domains.</li></ul>' +
+    '<div class="btn-row"><button class="btn btn-primary" data-action="reload">Retry</button></div></div></main>';
+}
+function viewWelcome() {
+  return '<main class="center-wrap">' +
+    '<div class="hero"><div class="logo">' + LOGO + '</div><h1>Classroom Examination Portal</h1>' +
+    '<p class="sub">Timed online tests with instant marking and worked solutions &mdash; synced live through Firebase.</p></div>' +
+    flashHtml() +
+    '<div class="role-grid">' +
+    '<button class="role-card" data-action="choose-admin"><div class="role-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8.3-8 9-4.8-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div><h2>Teacher / Admin</h2><p>Manage questions, students, tests and results.</p></button>' +
+    '<button class="role-card stu" data-action="choose-student"><div class="role-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></div><h2>Student</h2><p>Log in with your registered WhatsApp number and take your tests.</p></button>' +
+    '</div><p class="notice info" role="note"><strong>Cloud storage.</strong> ' + esc(CLOUD_NOTICE) + '</p></main>';
+}
+function viewAdminSetup() {
+  return '<main class="center-wrap narrow"><div class="card"><h1>Create administrator account</h1><p class="muted">No administrator exists yet. Register the teacher account with an email address and password. This can be done only once.</p>' + flashHtml() +
+    '<form data-form="admin-setup" novalidate>' +
+    '<div class="field"><label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" data-draft="adminEmail" value="' + esc(draft('adminEmail')) + '"' + aria('setup', 'email') + '>' + fieldErr('setup', 'email') + '</div>' +
+    '<div class="field"><label for="password">Password (at least 8 characters)</label><input id="password" name="password" type="password" autocomplete="new-password"' + aria('setup', 'password') + '>' + fieldErr('setup', 'password') + '</div>' +
+    '<div class="field"><label for="password2">Confirm password</label><input id="password2" name="password2" type="password" autocomplete="new-password"' + aria('setup', 'password2') + '>' + fieldErr('setup', 'password2') + '</div>' +
+    '<div class="btn-row"><button type="submit" class="btn btn-primary">Create Account</button><button type="button" class="btn btn-secondary" data-action="back-welcome">Back</button></div></form></div></main>';
+}
+function viewAdminLogin() {
+  return '<main class="center-wrap narrow"><div class="card"><h1>Administrator login</h1>' + flashHtml() +
+    '<form data-form="admin-login" novalidate>' +
+    '<div class="field"><label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="username" data-draft="adminEmail" value="' + esc(draft('adminEmail')) + '"></div>' +
+    '<div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password"></div>' +
+    '<div class="btn-row"><button type="submit" class="btn btn-primary">Login</button><button type="button" class="btn btn-secondary" data-action="back-welcome">Back</button><button type="button" class="btn btn-ghost" data-action="forgot-password">Forgot password?</button></div></form></div></main>';
+}
+function viewStudentLogin() {
+  return '<main class="center-wrap narrow"><div class="card"><h1>Student login</h1>' + flashHtml() +
+    '<form data-form="student-login" novalidate><div class="field"><label for="phone">Registered WhatsApp Number (Login Password)</label>' +
+    '<input id="phone" name="phone" type="password" inputmode="tel" autocomplete="off" autofocus><span class="hint">Your 10-digit number; +91 or spaces are fine.</span></div>' +
+    '<div class="btn-row"><button type="submit" class="btn btn-primary">Login</button><button type="button" class="btn btn-secondary" data-action="back-welcome">Back</button></div></form></div></main>';
+}
+
+/* ---------- shared question / result renderers ---------- */
+function optionsHtml(q, selected, mode) {
+  return '<div class="opts">' + q.options.map((o, i) => {
+    const isCorrect = i === q.correctOption, isSel = selected === i;
+    let cls = 'o', tags = '';
+    if (mode === 'bank') { if (isCorrect) { cls += ' correct'; tags = '<span class="tag t-ok">Correct</span>'; } }
+    else {
+      if (isCorrect) { cls += ' correct'; tags += '<span class="tag t-ok">Correct answer</span>'; }
+      if (isSel && !isCorrect) { cls += ' wrong'; tags += '<span class="tag t-bad">Your answer</span>'; }
+      if (isSel && isCorrect) tags += '<span class="tag t-you">Your answer</span>';
+    }
+    return '<div class="' + cls + '"><span class="ltr">' + 'ABCD'[i] + '</span><span class="rt">' + esc(o) + '</span>' + tags + '</div>';
+  }).join('') + '</div>';
+}
+function bankQuestionCard(q, n, note) {
+  return '<article class="qcard"><div class="qhead"><span class="chip">Question ' + n + '</span>' + (note ? '<span class="tiny">' + esc(note) + '</span>' : '') + '</div>' +
+    '<div class="rt">' + esc(q.stem) + '</div>' + optionsHtml(q, null, 'bank') +
+    '<p class="tiny" style="margin:.2rem 0">Correct answer: <strong>' + 'ABCD'[q.correctOption] + '</strong></p>' +
+    '<div class="solution"><span class="lbl">Worked solution</span><div class="rt">' + esc(q.solution) + '</div></div></article>';
+}
+function resultBody(sub, test, student) {
+  const reasonTxt = sub.submissionReason === 'timeout' ? 'Submitted automatically when time expired' : 'Submitted manually';
+  let html = '<div class="card"><div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:flex-start">' +
+    '<div><h2 style="margin-bottom:.2rem">' + esc(test.title) + '</h2><p class="muted">' + esc(student.name) + ' &middot; Batch ' + esc(student.batch) + '</p><p class="tiny">' + esc(reasonTxt) + ' &middot; ' + esc(fmtDate(sub.submittedAt)) + '</p></div>' +
+    '<span class="badge ' + (sub.passed ? 'pass' : 'fail') + '" style="font-size:1rem;padding:.3rem 1rem">' + (sub.passed ? 'PASS' : 'FAIL') + '</span></div>' +
+    '<div class="kv" style="margin-top:1rem">' +
+    '<div><dt>Marks obtained</dt><dd class="big-score">' + fmtScore(sub.score) + '<span class="muted" style="font-size:1rem"> / ' + sub.maximumScore + '</span></dd></div>' +
+    '<div><dt>Percentage</dt><dd>' + fmtPct(sub.percentage) + '</dd></div>' +
+    '<div><dt>Pass mark</dt><dd>' + esc(test.passMarkPercent) + '%</dd></div>' +
+    '<div><dt>Correct</dt><dd class="marks pos">' + sub.correctCount + '</dd></div>' +
+    '<div><dt>Incorrect</dt><dd class="marks neg">' + sub.incorrectCount + '</dd></div>' +
+    '<div><dt>Unanswered</dt><dd>' + sub.unansweredCount + '</dd></div></div></div>';
+  html += '<h2>Question review</h2>';
+  html += test.questionSnapshots.map((q, i) => {
+    const sel = sub.answers[q.id];
+    const m = questionMarks(q, sel);
+    const selTxt = (sel === null || sel === undefined) ? 'Not Answered' : 'ABCD'[sel];
+    return '<article class="qcard"><div class="qhead"><span class="chip">Question ' + (i + 1) + '</span><span class="marks ' + (m > 0 ? 'pos' : m < 0 ? 'neg' : 'zero') + '">Marks: ' + fmtMarks(m) + '</span></div>' +
+      '<div class="rt">' + esc(q.stem) + '</div>' + optionsHtml(q, sel, 'result') +
+      '<p class="tiny" style="margin:.2rem 0">Your answer: <strong>' + selTxt + '</strong> &middot; Correct answer: <strong>' + 'ABCD'[q.correctOption] + '</strong></p>' +
+      '<div class="solution"><span class="lbl">Step-by-step solution</span><div class="rt">' + esc(q.solution) + '</div></div></article>';
+  }).join('');
+  return html;
+}
+
+/* ---------- admin ---------- */
+const ADMIN_NAV = [['dashboard', 'Dashboard'], ['questions', 'Question Bank'], ['students', 'Students'], ['createTest', 'Create Test'], ['tests', 'Deployed Tests'], ['results', 'Results'], ['backup', 'Backup']];
+function viewAdmin() {
+  let body = '';
+  switch (ui.section) {
+    case 'questions': body = secQuestions(); break;
+    case 'students': body = secStudents(); break;
+    case 'createTest': body = secCreateTest(); break;
+    case 'tests': body = secTests(); break;
+    case 'results': body = secResults(); break;
+    case 'backup': body = secBackup(); break;
+    default: body = secDashboard();
+  }
+  return '<div class="admin"><aside class="sidebar"><div class="brand"><span class="logo-sm">' + LOGO.replace('width="30" height="30"', 'width="20" height="20"') + '</span><span>Teacher Console</span></div>' +
+    '<nav aria-label="Administrator sections">' + ADMIN_NAV.map(n => '<button class="nav-btn' + (ui.section === n[0] ? ' active' : '') + '" data-action="nav" data-section="' + n[0] + '"' + (ui.section === n[0] ? ' aria-current="page"' : '') + '>' + esc(n[1]) + '</button>').join('') + '</nav>' +
+    '<div class="side-foot"><p class="tiny">Live data from Firebase.</p><button class="btn btn-secondary" data-action="logout">Logout</button></div></aside>' +
+    '<main class="content" id="main">' + flashHtml() + body + '</main></div>';
+}
+function secDashboard() {
+  const inProg = state.attempts.filter(a => !findSubmission(a.testId, a.studentId)).length;
+  return '<h1>Dashboard</h1><div class="stat-grid">' +
+    '<div class="stat a1"><div class="n">' + state.questions.length + '</div><div class="l">Total Questions</div></div>' +
+    '<div class="stat a2"><div class="n">' + state.students.length + '</div><div class="l">Total Students</div></div>' +
+    '<div class="stat a3"><div class="n">' + state.tests.length + '</div><div class="l">Total Tests</div></div>' +
+    '<div class="stat a4"><div class="n">' + state.submissions.length + '</div><div class="l">Completed Submissions</div></div></div>' +
+    (inProg ? '<p class="notice info" role="status">' + inProg + ' examination' + (inProg === 1 ? ' is' : 's are') + ' currently in progress.</p>' : '') +
+    '<p class="notice info" role="note"><strong>Cloud storage.</strong> ' + esc(CLOUD_NOTICE) + '</p>';
+}
+function secQuestions() {
+  const chk = ui.qCheck;
+  let result = '';
+  if (chk) {
+    if (chk.valid) {
+      result = '<div class="flash success" role="status">Validation passed: ' + chk.questions.length + ' question' + (chk.questions.length === 1 ? '' : 's') + ' ready to save. Review the rendered preview below, then press Save Questions. The portal checks structure only; it cannot verify that the answers and solutions are correct, so check the preview.</div>' +
+        chk.questions.map((q, i) => bankQuestionCard(q, i + 1, 'Preview — not saved yet')).join('');
+    } else {
+      result = '<div class="flash error" role="alert"><strong>Nothing was saved. Please fix these problems:</strong><ul class="errs">' + chk.errors.map(e => '<li>' + esc(e) + '</li>').join('') + '</ul>' + (chk.detail ? '<p class="tiny">Parser message: ' + esc(chk.detail) + '</p>' : '') + '</div>';
+    }
+  }
+  const bank = state.questions.length
+    ? state.questions.map((q, i) => bankQuestionCard(q, i + 1)).join('')
+    : '<div class="empty">The question bank is empty. Import questions above to get started.</div>';
+  return '<h1>Question Bank</h1><section class="card"><h2>Import questions (AI-assisted)</h2>' +
+    '<p class="muted">Copy the prompt, give it to an AI assistant along with a question paper, then paste the JSON it returns here. Questions are validated and previewed before anything is saved.</p>' +
+    '<div class="field" style="max-width:420px;margin-top:.8rem"><label for="promptSubject">Subject of the question paper</label><input id="promptSubject" type="text" list="subjectList" data-draft="promptSubject" autocomplete="off" placeholder="e.g. Physics" value="' + esc(draft('promptSubject', lastSubject())) + '"' + aria('prompt', 'subject') + '>' +
+    '<datalist id="subjectList">' + SUBJECT_SUGGESTIONS.map(x => '<option value="' + esc(x) + '"></option>').join('') + '</datalist>' + fieldErr('prompt', 'subject') + '<span class="hint">Pick a subject from the list or type your own. The copied prompt is written for that subject.</span></div>' +
+    '<div class="btn-row" style="margin-top:.4rem"><button class="btn btn-secondary" data-action="copy-prompt">Copy AI Prompt</button></div>' +
+    (ui.showPromptManual ? '<div class="field" style="margin-top:.8rem"><label for="manualPrompt">Prompt (select all and copy manually)</label><textarea id="manualPrompt" rows="10" readonly>' + esc(ui.manualPromptText || '') + '</textarea></div>' : '') +
+    '<div class="field" style="margin-top:1rem"><label for="jsonText">Paste Question JSON</label><textarea id="jsonText" rows="12" spellcheck="false" placeholder="[ { &quot;id&quot;: &quot;q_quad_k8mQ4sL2&quot;, ... } ]">' + esc(ui.jsonText) + '</textarea></div>' +
+    '<div class="btn-row"><button class="btn btn-primary" data-action="validate-q">Validate &amp; Preview</button><button class="btn btn-success" id="saveQBtn" data-action="save-q"' + (chk && chk.valid ? '' : ' disabled') + '>Save Questions</button></div>' +
+    '<div id="importResult" style="margin-top:1rem">' + result + '</div></section>' +
+    '<h2>Saved questions (' + state.questions.length + ')</h2>' + bank;
+}
+function secStudents() {
+  const batches = uniqueBatches();
+  const rows = state.students.length
+    ? '<div class="table-wrap"><table><thead><tr><th>Name</th><th>Registered WhatsApp Number</th><th>Batch</th><th>Date Added</th></tr></thead><tbody>' +
+      state.students.map(s => '<tr><td>' + esc(s.name) + '</td><td>' + esc(s.phone) + '</td><td>' + esc(s.batch) + '</td><td>' + esc(fmtDay(s.createdAt)) + '</td></tr>').join('') + '</tbody></table></div>'
+    : '<div class="empty">No students registered yet.</div>';
+  return '<h1>Students</h1><section class="card"><h2>Register a student</h2>' +
+    '<form data-form="add-student" novalidate><div class="form-grid">' +
+    '<div class="field"><label for="stuName">Student Name</label><input id="stuName" type="text" data-draft="stuName" autocomplete="off" value="' + esc(draft('stuName')) + '"' + aria('student', 'name') + '>' + fieldErr('student', 'name') + '</div>' +
+    '<div class="field"><label for="stuPhone">WhatsApp Number</label><input id="stuPhone" type="tel" data-draft="stuPhone" autocomplete="off" placeholder="e.g. 98765 43210" value="' + esc(draft('stuPhone')) + '"' + aria('student', 'phone') + '>' + fieldErr('student', 'phone') + '</div>' +
+    '<div class="field"><label for="stuBatch">Batch</label><input id="stuBatch" type="text" list="batchList" data-draft="stuBatch" autocomplete="off" placeholder="e.g. XII-A" value="' + esc(draft('stuBatch')) + '"' + aria('student', 'batch') + '>' +
+    '<datalist id="batchList">' + batches.map(b => '<option value="' + esc(b) + '"></option>').join('') + '</datalist>' + fieldErr('student', 'batch') + '</div></div>' +
+    '<p class="hint">The WhatsApp number is the student’s login password. Keep it private.</p>' +
+    '<div class="btn-row"><button type="submit" class="btn btn-primary">Add Student</button></div></form></section>' +
+    '<h2>Registered students (' + state.students.length + ')</h2>' + rows;
+}
+function testSummaryHtml() {
+  const n = selectedQuestionIds().length;
+  const dur = String(draft('testDuration', '30')).trim(), pass = String(draft('testPass', '40')).trim();
+  return '<dl class="kv"><div><dt>Title</dt><dd>' + esc(draft('testTitle').trim() || '—') + '</dd></div>' +
+    '<div><dt>Target batch</dt><dd>' + esc(draft('testBatch') || '—') + '</dd></div>' +
+    '<div><dt>Questions</dt><dd>' + n + '</dd></div>' +
+    '<div><dt>Duration</dt><dd>' + esc(dur || '—') + ' min</dd></div>' +
+    '<div><dt>Maximum marks</dt><dd>' + (4 * n) + '</dd></div>' +
+    '<div><dt>Pass percentage</dt><dd>' + esc(pass || '—') + '%</dd></div></dl>';
+}
+function secCreateTest() {
+  const batches = uniqueBatches();
+  const qList = state.questions.length
+    ? state.questions.map((q, i) => '<label class="q-pick"><input type="checkbox" data-qsel="' + esc(q.id) + '"' + (ui.selected.has(q.id) ? ' checked' : '') + '><div class="rt"><strong>Q' + (i + 1) + '.</strong> ' + esc(q.stem) + '</div></label>').join('')
+    : '<div class="empty">No questions saved yet. Import questions in the Question Bank first.</div>';
+  const sel = draft('testBatch');
+  return '<h1>Create Test</h1><form data-form="deploy-test" novalidate><section class="card"><h2>Test settings</h2><div class="form-grid">' +
+    '<div class="field"><label for="testTitle">Test Title</label><input id="testTitle" type="text" data-draft="testTitle" autocomplete="off" value="' + esc(draft('testTitle')) + '"' + aria('test', 'title') + '>' + fieldErr('test', 'title') + '</div>' +
+    '<div class="field"><label for="testBatch">Target Batch</label><select id="testBatch" data-draft="testBatch"' + aria('test', 'batch') + '><option value="">' + (batches.length ? 'Select a batch…' : 'No batches — register students first') + '</option>' +
+    batches.map(b => '<option value="' + esc(b) + '"' + (batchKey(b) === batchKey(sel) ? ' selected' : '') + '>' + esc(b) + '</option>').join('') + '</select>' + fieldErr('test', 'batch') + '</div>' +
+    '<div class="field"><label for="testDuration">Duration (minutes, 1–180)</label><input id="testDuration" type="text" inputmode="numeric" data-draft="testDuration" value="' + esc(draft('testDuration', '30')) + '"' + aria('test', 'duration') + '>' + fieldErr('test', 'duration') + '</div>' +
+    '<div class="field"><label for="testPass">Pass Mark (%)</label><input id="testPass" type="text" inputmode="decimal" data-draft="testPass" value="' + esc(draft('testPass', '40')) + '"' + aria('test', 'pass') + '>' + fieldErr('test', 'pass') + '</div></div>' +
+    '<p class="hint">Marking is fixed: +4 for a correct answer, −1 for an incorrect answer, 0 if unanswered.</p></section>' +
+    '<section class="card"><div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:center"><h2 style="margin:0">Select questions</h2><span class="chip" id="selCount">' + selectedQuestionIds().length + ' selected</span></div>' +
+    fieldErr('test', 'questions') + '<div style="margin-top:.8rem">' + qList + '</div></section>' +
+    '<section class="card"><h2>Summary</h2><div id="testSummary">' + testSummaryHtml() + '</div>' +
+    '<div class="btn-row"><button type="submit" class="btn btn-primary">Deploy Test</button></div></section></form>';
+}
+function secTests() {
+  if (!state.tests.length) return '<h1>Deployed Tests</h1><div class="empty">No tests have been deployed yet.</div>';
+  return '<h1>Deployed Tests</h1><div class="table-wrap"><table><thead><tr><th>Title</th><th>Batch</th><th>Questions</th><th>Duration</th><th>Max Marks</th><th>Pass Mark</th><th>Deployed</th><th>Submissions</th><th></th></tr></thead><tbody>' +
+    state.tests.map(t => '<tr><td class="wrap">' + esc(t.title) + '</td><td>' + esc(t.batch) + '</td><td>' + t.questionSnapshots.length + '</td><td>' + t.durationMinutes + ' min</td><td>' + (4 * t.questionSnapshots.length) + '</td><td>' + esc(t.passMarkPercent) + '%</td><td>' + esc(fmtDate(t.deployedAt)) + '</td><td>' + state.submissions.filter(s => s.testId === t.id).length + '</td><td><button class="btn btn-secondary btn-sm" data-action="view-results" data-id="' + esc(t.id) + '">View Results</button></td></tr>').join('') + '</tbody></table></div>';
+}
+function secResults() {
+  if (ui.detailSubId) {
+    const sub = state.submissions.find(s => s.id === ui.detailSubId);
+    const test = sub && state.tests.find(t => t.id === sub.testId), st = sub && state.students.find(s => s.id === sub.studentId);
+    if (sub && test && st) return '<div class="btn-row" style="margin:0 0 1rem"><button class="btn btn-secondary" data-action="close-detail">Back to Results</button></div><h1>Result details</h1>' + resultBody(sub, test, st);
+    ui.detailSubId = null;
+  }
+  const f = ui.resultsFilter;
+  const subs = state.submissions.filter(s => f === 'all' || s.testId === f).slice().sort((a, b) => Date.parse(b.submittedAt) - Date.parse(a.submittedAt));
+  const sel = '<div class="field" style="max-width:420px"><label for="resFilter">Show results for</label><select id="resFilter" data-change="results-filter"><option value="all">All tests</option>' +
+    state.tests.map(t => '<option value="' + esc(t.id) + '"' + (f === t.id ? ' selected' : '') + '>' + esc(t.title) + ' (' + esc(t.batch) + ')</option>').join('') + '</select></div>';
+  let table;
+  if (!subs.length) table = '<div class="empty">No completed submissions' + (f === 'all' ? ' yet' : ' for this test yet') + '.</div>';
+  else table = '<div class="table-wrap"><table><thead><tr><th>Test Title</th><th>Student Name</th><th>WhatsApp Number</th><th>Batch</th><th>Correct</th><th>Incorrect</th><th>Unanswered</th><th>Score</th><th>Max Score</th><th>Percentage</th><th>Result</th><th>Submission Time</th><th>Reason</th><th></th></tr></thead><tbody>' +
+    subs.map(s => {
+      const t = state.tests.find(x => x.id === s.testId), st = state.students.find(x => x.id === s.studentId);
+      return '<tr><td class="wrap">' + esc(t ? t.title : '—') + '</td><td>' + esc(st ? st.name : '—') + '</td><td>' + esc(st ? st.phone : '—') + '</td><td>' + esc(st ? st.batch : '—') + '</td><td>' + s.correctCount + '</td><td>' + s.incorrectCount + '</td><td>' + s.unansweredCount + '</td><td>' + fmtScore(s.score) + '</td><td>' + s.maximumScore + '</td><td>' + fmtPct(s.percentage) + '</td><td><span class="badge ' + (s.passed ? 'pass' : 'fail') + '">' + (s.passed ? 'Pass' : 'Fail') + '</span></td><td>' + esc(fmtDate(s.submittedAt)) + '</td><td>' + esc(s.submissionReason) + '</td><td>' + (t && st ? '<button class="btn btn-secondary btn-sm" data-action="view-detail" data-id="' + esc(s.id) + '">View Details</button>' : '') + '</td></tr>';
+    }).join('') + '</tbody></table></div>';
+  return '<h1>Results</h1>' + sel + table;
+}
+function secBackup() {
+  return '<h1>Backup</h1>' +
+    '<section class="card"><h2>Export Backup</h2><p class="muted">Download a complete snapshot (questions, students, tests, attempts and submissions) as a JSON file. Your live data stays in Firebase; this is an extra copy for safekeeping. Exporting does not change any data. Keep the file private: it contains student phone numbers.</p>' +
+    '<div class="btn-row"><button class="btn btn-primary" data-action="export-backup">Export Backup</button></div></section>';
+}
+
+/* ---------- student ---------- */
+function studentTopbar(st) {
+  return '<div class="topbar"><div class="brand"><span class="logo-sm">' + LOGO.replace('width="30" height="30"', 'width="20" height="20"') + '</span><span>Classroom Examination Portal</span></div>' +
+    '<div style="display:flex;align-items:center;gap:.8rem"><span class="muted">' + esc(st.name) + '</span><button class="btn btn-secondary btn-sm" data-action="logout">Logout</button></div></div>';
+}
+function viewStudentDashboard() {
+  const st = currentStudent();
+  const tests = state.tests.filter(t => batchKey(t.batch) === batchKey(st.batch));
+  const cards = tests.length ? '<div class="test-grid">' + tests.map(t => {
+    const sub = findSubmission(t.id, st.id), att = sub ? null : findAttempt(t.id, st.id);
+    const status = sub ? ['done', 'Completed'] : att ? ['prog', 'In Progress'] : ['new', 'Not Started'];
+    const btn = sub ? '<button class="btn btn-primary" data-action="view-result" data-id="' + esc(sub.id) + '">View Result</button>'
+      : att ? '<button class="btn btn-primary" data-action="resume-test" data-id="' + esc(t.id) + '">Resume Test</button>'
+      : '<button class="btn btn-primary" data-action="start-test" data-id="' + esc(t.id) + '">Start Test</button>';
+    return '<article class="card test-card"><div style="display:flex;justify-content:space-between;gap:.6rem;align-items:flex-start"><h3 style="margin:0">' + esc(t.title) + '</h3><span class="badge ' + status[0] + '">' + status[1] + '</span></div>' +
+      '<div class="kv"><div><dt>Questions</dt><dd>' + t.questionSnapshots.length + '</dd></div><div><dt>Duration</dt><dd>' + t.durationMinutes + ' min</dd></div><div><dt>Max marks</dt><dd>' + (4 * t.questionSnapshots.length) + '</dd></div><div><dt>Pass</dt><dd>' + esc(t.passMarkPercent) + '%</dd></div></div>' +
+      '<div class="btn-row">' + btn + '</div></article>';
+  }).join('') + '</div>' : '<div class="empty">No tests have been assigned to your batch yet.</div>';
+  return studentTopbar(st) + '<main class="page">' + flashHtml() + '<h1>Welcome, ' + esc(st.name) + '</h1><p class="muted">Batch: <strong>' + esc(st.batch) + '</strong></p><h2 style="margin-top:1.4rem">Your tests</h2>' + cards + '</main>';
+}
+function viewInstructions() {
+  const st = currentStudent();
+  const t = state.tests.find(x => x.id === ui.instrTestId);
+  if (!t || batchKey(t.batch) !== batchKey(st.batch)) { ui.screen = 'student'; return viewStudentDashboard(); }
+  const N = t.questionSnapshots.length;
+  return studentTopbar(st) + '<main class="page">' + flashHtml() + '<div class="card"><h1>' + esc(t.title) + '</h1><p class="muted">Batch ' + esc(t.batch) + '</p>' +
+    '<div class="kv"><div><dt>Total questions</dt><dd>' + N + '</dd></div><div><dt>Time limit</dt><dd>' + t.durationMinutes + ' min</dd></div><div><dt>Positive marking</dt><dd>+4 per correct</dd></div><div><dt>Negative marking</dt><dd>−1 per incorrect</dd></div><div><dt>Maximum marks</dt><dd>' + (4 * N) + '</dd></div><div><dt>Pass percentage</dt><dd>' + esc(t.passMarkPercent) + '%</dd></div></div>' +
+    '<h2 style="margin-top:1.3rem">Instructions</h2><ul>' +
+    '<li>You can move between questions freely and change your answers before submitting.</li>' +
+    '<li>You can mark questions for review; marked questions are still graded normally.</li>' +
+    '<li>Unanswered questions receive zero marks.</li>' +
+    '<li>The examination is submitted automatically when the time expires.</li>' +
+    '<li>Submission is final &mdash; each test can be attempted only once.</li>' +
+    '<li>Your results and worked solutions are shown after submission.</li></ul>' +
+    '<p class="notice">The timer starts when you press <strong>Begin Examination</strong>. It keeps running even if you refresh, log out, switch device or close the browser.</p>' +
+    '<div class="btn-row"><button class="btn btn-primary" data-action="begin-exam">Begin Examination</button><button class="btn btn-secondary" data-action="back-dashboard">Back</button></div></div></main>';
+}
+function qState(att, q) {
+  const answered = att.answers[q.id] !== null && att.answers[q.id] !== undefined, marked = att.reviewFlags.indexOf(q.id) >= 0, visited = att.visited.indexOf(q.id) >= 0;
+  if (answered && marked) return 'answered-review';
+  if (marked) return 'review';
+  if (answered) return 'answered';
+  if (visited) return 'unanswered';
+  return 'notvisited';
+}
+const STATE_LABEL = { 'notvisited': 'Not visited', 'unanswered': 'Visited, unanswered', 'answered': 'Answered', 'review': 'Marked for review', 'answered-review': 'Answered and marked for review' };
+function viewExam() {
+  const st = currentStudent();
+  const test = state.tests.find(t => t.id === ui.exam.testId);
+  const att = findAttempt(ui.exam.testId, st.id);
+  const N = test.questionSnapshots.length;
+  const idx = Math.max(0, Math.min(N - 1, ui.exam.index));
+  const q = test.questionSnapshots[idx];
+  const sel = att.answers[q.id], marked = att.reviewFlags.indexOf(q.id) >= 0;
+  const rem = Math.max(0, deadlineMs(att, test) - serverNow());
+  const timerCls = rem <= 60000 ? ' crit' : rem <= 300000 ? ' low' : '';
+  const answered = test.questionSnapshots.filter(x => att.answers[x.id] !== null && att.answers[x.id] !== undefined).length;
+  const reviewCount = test.questionSnapshots.filter(x => att.reviewFlags.indexOf(x.id) >= 0).length;
+  const online = navigator.onLine !== false;
+  const saveTxt = !online ? 'Offline — answers will sync when reconnected' : (att._pending ? 'Saving…' : 'All changes saved');
+  const pal = test.questionSnapshots.map((x, i) => { const s = qState(att, x); return '<button class="pal s-' + s + (i === idx ? ' current' : '') + '" data-action="jump" data-index="' + i + '" aria-label="Question ' + (i + 1) + ': ' + STATE_LABEL[s] + '"' + (i === idx ? ' aria-current="true"' : '') + '>' + (i + 1) + '</button>'; }).join('');
+  const modal = ui.exam.confirmOpen
+    ? '<div class="backdrop"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"><h2 id="mTitle">Submit your examination?</h2>' +
+      '<div class="kv"><div><dt>Total questions</dt><dd>' + N + '</dd></div><div><dt>Answered</dt><dd>' + answered + '</dd></div><div><dt>Unanswered</dt><dd>' + (N - answered) + '</dd></div><div><dt>Marked for review</dt><dd>' + reviewCount + '</dd></div></div>' +
+      '<p class="muted" style="margin-top:1rem">Submission is final. You cannot change your answers afterwards.</p>' +
+      '<div class="btn-row"><button class="btn btn-primary" data-action="confirm-submit">Confirm Submission</button><button class="btn btn-secondary" data-action="close-submit">Continue Examination</button></div></div></div>' : '';
+  return '<header class="exam-head"><div class="eh-left"><strong>' + esc(test.title) + '</strong><span class="tiny">' + esc(st.name) + '</span></div>' +
+    '<div class="timer' + timerCls + '" id="timer" role="timer" aria-label="Time remaining">' + fmtDuration(rem) + '</div>' +
+    '<div class="eh-right"><span class="savestate' + (online ? '' : ' off') + '" role="status">' + esc(saveTxt) + '</span><button class="btn btn-ghost btn-sm" data-action="logout" title="Log out. Your timer keeps running.">Logout</button><button class="btn btn-primary" data-action="open-submit">Submit Test</button></div></header>' +
+    (ui.flash ? '<div style="max-width:1200px;margin:.8rem auto 0;padding:0 clamp(.8rem,3vw,2rem)">' + flashHtml() + '</div>' : '') +
+    '<div class="exam-grid"><section class="card" aria-label="Question ' + (idx + 1) + ' of ' + N + '">' +
+    '<div style="display:flex;gap:.5rem;flex-wrap:wrap"><span class="chip">Question ' + (idx + 1) + ' of ' + N + '</span>' + (marked ? '<span class="chip chip-review">Marked for review</span>' : '') + '</div>' +
+    '<div class="rt q-stem">' + esc(q.stem) + '</div>' +
+    '<div class="options" role="radiogroup" aria-label="Answer options">' + q.options.map((o, i) => '<label class="opt' + (sel === i ? ' sel' : '') + '"><input type="radio" name="opt" value="' + i + '" data-change="select-option"' + (sel === i ? ' checked' : '') + '><span class="opt-letter">' + 'ABCD'[i] + '</span><span class="rt">' + esc(o) + '</span></label>').join('') + '</div>' +
+    '<div class="q-actions"><button class="btn btn-secondary" data-action="clear-answer"' + (sel === null || sel === undefined ? ' disabled' : '') + '>Clear Answer</button>' +
+    '<button class="btn btn-secondary" data-action="toggle-review" aria-pressed="' + marked + '">' + (marked ? 'Unmark Review' : 'Mark for Review') + '</button></div>' +
+    '<div class="q-nav"><button class="btn btn-secondary" data-action="prev-q"' + (idx === 0 ? ' disabled' : '') + '>Previous</button><button class="btn btn-primary" data-action="next-q"' + (idx === N - 1 ? ' disabled' : '') + '>Next</button></div></section>' +
+    '<aside class="card palette" aria-label="Question palette"><h3>Question palette</h3><div class="pal-grid">' + pal + '</div>' +
+    '<div class="legend"><span><i class="sw s-notvisited"></i>Not Visited</span><span><i class="sw s-unanswered"></i>Visited but Unanswered</span><span><i class="sw s-answered"></i>Answered</span><span><i class="sw s-review"></i>Marked for Review</span><span><i class="sw s-answered-review"></i>Answered and Marked for Review</span></div></aside></div>' + modal;
+}
+function viewStudentResult() {
+  const st = currentStudent();
+  const sub = state.submissions.find(s => s.id === ui.resultSubId && s.studentId === st.id);
+  const test = sub && state.tests.find(t => t.id === sub.testId);
+  if (!sub || !test) { ui.screen = 'student'; return viewStudentDashboard(); }
+  return studentTopbar(st) + '<main class="page">' + flashHtml() + '<div class="btn-row" style="margin:0 0 1rem"><button class="btn btn-secondary" data-action="back-dashboard">Back to Dashboard</button></div><h1>Your result</h1>' + resultBody(sub, test, st) +
+    '<div class="btn-row"><button class="btn btn-primary" data-action="back-dashboard">Back to Dashboard</button></div></main>';
+}
+
+/* =====================================================================
+   9. EVENT HANDLING (delegated; no inline handlers)
+   ===================================================================== */
+function handleAction(action, el) {
+  switch (action) {
+    case 'choose-admin': go(adminExists ? 'adminLogin' : 'adminSetup'); break;
+    case 'choose-student': go('studentLogin'); break;
+    case 'back-welcome': go('welcome'); break;
+    case 'logout': logout(); break;
+    case 'reload': location.reload(); break;
+    case 'forgot-password': forgotPassword(); break;
+    case 'nav': if (requireAdmin()) navSection(el.dataset.section); break;
+    case 'copy-prompt': if (requireAdmin()) copyPrompt(); break;
+    case 'validate-q': if (requireAdmin()) validateQuestions(); break;
+    case 'save-q': saveQuestions(); break;
+    case 'view-results': if (requireAdmin()) { ui.resultsFilter = el.dataset.id; navSection('results'); } break;
+    case 'view-detail': if (requireAdmin()) { ui.detailSubId = el.dataset.id; ui.scrollTop = true; render(); } break;
+    case 'close-detail': if (requireAdmin()) { ui.detailSubId = null; ui.scrollTop = true; render(); } break;
+    case 'export-backup': exportBackup(); break;
+    /* student */
+    case 'back-dashboard': if (requireStudent()) { ui.exam = null; go('student'); } break;
+    case 'start-test': {
+      if (!requireStudent()) break;
+      const st = currentStudent(), t = state.tests.find(x => x.id === el.dataset.id);
+      if (!t || batchKey(t.batch) !== batchKey(st.batch)) { go('student', { type: 'error', text: 'That test is not available to your batch.' }); break; }
+      const sub = findSubmission(t.id, st.id);
+      if (sub) { ui.resultSubId = sub.id; go('result'); break; }
+      if (findAttempt(t.id, st.id)) { resumeExam(t.id); break; }
+      ui.instrTestId = t.id; go('instructions'); break;
+    }
+    case 'resume-test': if (requireStudent()) resumeExam(el.dataset.id); break;
+    case 'view-result': {
+      if (!requireStudent()) break;
+      const sub = state.submissions.find(s => s.id === el.dataset.id && s.studentId === session.studentId);
+      if (sub) { ui.resultSubId = sub.id; go('result'); } else go('student');
+      break;
+    }
+    case 'begin-exam': if (requireStudent()) beginExam(); break;
+    /* exam */
+    case 'jump': if (examContext()) goQuestion(parseInt(el.dataset.index, 10)); break;
+    case 'prev-q': if (examContext()) goQuestion(ui.exam.index - 1); break;
+    case 'next-q': if (examContext()) goQuestion(ui.exam.index + 1); break;
+    case 'clear-answer': clearAnswer(); break;
+    case 'toggle-review': toggleReview(); break;
+    case 'open-submit': if (examContext()) { ui.exam.confirmOpen = true; render(); } break;
+    case 'close-submit': if (ui.exam) { ui.exam.confirmOpen = false; render(); } break;
+    case 'confirm-submit': submitExam(); break;
+  }
+}
+function handleForm(name, form) {
+  switch (name) {
+    case 'admin-setup': doAdminSetup(form); break;
+    case 'admin-login': doAdminLogin(form); break;
+    case 'student-login': doStudentLogin(form); break;
+    case 'add-student': addStudent(); break;
+    case 'deploy-test': deployTest(); break;
+  }
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-action]');
+  if (!t || t.disabled) return;
+  handleAction(t.dataset.action, t);
+});
+document.addEventListener('submit', e => {
+  const f = e.target.closest('form[data-form]');
+  if (!f) return;
+  e.preventDefault();
+  handleForm(f.dataset.form, f);
+});
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'jsonText') {
+    ui.jsonText = t.value;
+    if (ui.qCheck) {
+      ui.qCheck = null;
+      const r = $('#importResult'); if (r) r.innerHTML = '<p class="hint">The text changed after validation. Press Validate &amp; Preview again before saving.</p>';
+      const b = $('#saveQBtn'); if (b) b.disabled = true;
+    }
+    return;
+  }
+  if (t.dataset && t.dataset.draft) {
+    ui.drafts[t.dataset.draft] = t.value;
+    if (ui.screen === 'admin' && ui.section === 'createTest') updateTestSummary();
+  }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.draft) {
+    ui.drafts[t.dataset.draft] = t.value;
+    if (ui.screen === 'admin' && ui.section === 'createTest') updateTestSummary();
+  } else if (t.dataset.qsel !== undefined) {
+    if (session.role !== 'admin') return;
+    if (t.checked) ui.selected.add(t.dataset.qsel); else ui.selected.delete(t.dataset.qsel);
+    updateTestSummary();
+  } else if (t.dataset.change === 'select-option') {
+    setAnswer(parseInt(t.value, 10));
+  } else if (t.dataset.change === 'results-filter') {
+    if (session.role !== 'admin') return;
+    ui.resultsFilter = t.value; render();
+  }
+});
+document.addEventListener('focusout', () => {
+  if (!renderPending) return;
+  setTimeout(() => { if (renderPending && !isTypingTarget(document.activeElement)) render(); }, 0);
+});
+document.addEventListener('keydown', e => {
+  const modal = $('.modal');
+  if (!modal) return;
+  if (e.key === 'Escape') {
+    if (ui.exam && ui.exam.confirmOpen) { ui.exam.confirmOpen = false; render(); }
+  } else if (e.key === 'Tab') {
+    const f = Array.from(modal.querySelectorAll('button:not([disabled])'));
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    else if (!modal.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+  }
+});
+document.addEventListener('visibilitychange', () => { if (!document.hidden && ui.screen === 'exam') tick(); });
+window.addEventListener('online', () => { if (ui.screen === 'exam') render(); });
+window.addEventListener('offline', () => { if (ui.screen === 'exam') render(); });
+window.addEventListener('error', ev => { console.error(ev.error || ev.message); });
+
+/* =====================================================================
+   10. START-UP
+   ===================================================================== */
+function init() {
+  render();
+  syncClock();
+  onAuthStateChanged(auth, user => {
+    if (ignoreAuth > 0) return;
+    handleAuth(user);
+  }, err => {
+    console.error(err);
+    fatal = { title: 'Cannot connect to Firebase', errors: [authErrMsg(err)] };
+    render();
+  });
+  // Expired attempts are finalised even if nobody is looking at them (teacher or student browser).
+  setInterval(() => { if (session.role && isReady()) reconcileExpired(); }, 15000);
+  if (document.readyState === 'complete') renderMath($('#app'));
+  else window.addEventListener('load', () => renderMath($('#app')));
+}
+init();
+
+</script>
+</body>
+</html>
