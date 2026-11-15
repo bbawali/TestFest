@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Classroom Examination Portal",
+  "name": "TestFest",
   "short_name": "TestFest",
-  "description": "Timed online tests with instant marking and worked solutions.",
+  "description": "Classroom Examination Portal: timed online tests with instant marking and worked solutions.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -17,12 +17,6 @@
       "sizes": "192x192 512x512",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "icon.png",
-      "sizes": "192x192 512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ]
 }
